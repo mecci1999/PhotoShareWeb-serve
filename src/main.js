@@ -1,3 +1,4 @@
+const { request, response } = require('express');
 const express = require('express');
 const app = express();
 const port = 3000;    //端口号
@@ -44,4 +45,18 @@ app.get('/posts/:postId', (request,response) => {
   //查找具体内容
   const posts = data.filter(item => item.id == postId);
   response.send(posts[0]);
+});
+
+
+/**
+ * 创建内容资源
+ */
+app.post('/posts', (request,response) => {
+  //获取请求里的数据
+  const { content } = request.body;
+
+  //做出响应
+  response.send({
+    message: `成功的创建了内容：${content}`
+  });
 });
