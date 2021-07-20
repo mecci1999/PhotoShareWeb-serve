@@ -43,6 +43,7 @@ app.get('/posts/:postId', (request,response) => {
 
   //查找具体内容
   const posts = data.filter(item => item.id == postId);
+  //做出响应
   response.send(posts[0]);
 });
 
@@ -52,7 +53,8 @@ app.get('/posts/:postId', (request,response) => {
  app.post('/posts', (request,response) => {
   //获取请求里的数据
   const { content } = request.body;
-
+  //设置响应状态码
+  response.status(201);
   //做出响应
   response.send({
     message: `成功的创建了内容：${content}`
