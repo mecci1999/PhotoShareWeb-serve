@@ -44,9 +44,11 @@ app.get('/posts/:postId', (request,response) => {
 
   //查找具体内容
   const posts = data.filter(item => item.id == postId);
+  //做出响应
   response.send(posts[0]);
 });
 
+<<<<<<< HEAD
 
 /**
  * 创建内容资源
@@ -55,6 +57,16 @@ app.post('/posts', (request,response) => {
   //获取请求里的数据
   const { content } = request.body;
 
+=======
+/**
+ * 创建内容资源
+ */
+ app.post('/posts', (request,response) => {
+  //获取请求里的数据
+  const { content } = request.body;
+  //设置响应状态码
+  response.status(201);
+>>>>>>> http
   //做出响应
   response.send({
     message: `成功的创建了内容：${content}`
