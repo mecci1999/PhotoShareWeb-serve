@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 const port = 3000;    //端口号
 
+/**
+ * 使用 JSON 中间件
+ */
+app.use(express.json());
+
 app.listen(port, () => {
   console.log('服务器已启动！');
 });
