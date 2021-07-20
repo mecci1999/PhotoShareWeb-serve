@@ -66,6 +66,13 @@ app.post('/posts', (request,response) => {
   const { content } = request.body;
   //设置响应状态码
   response.status(201);
+<<<<<<< HEAD
+>>>>>>> http
+=======
+  //输出请求里的头部数据
+  console.log(request.headers['sing-alone']);
+  //设置响应的头部数据
+  response.set('Sing-Alone','How I Wonder What You Are');
 >>>>>>> http
   //做出响应
   response.send({
