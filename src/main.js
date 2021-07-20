@@ -55,6 +55,10 @@ app.get('/posts/:postId', (request,response) => {
   const { content } = request.body;
   //设置响应状态码
   response.status(201);
+  //输出请求里的头部数据
+  console.log(request.headers['sing-alone']);
+  //设置响应的头部数据
+  response.set('Sing-Alone','How I Wonder What You Are');
   //做出响应
   response.send({
     message: `成功的创建了内容：${content}`
