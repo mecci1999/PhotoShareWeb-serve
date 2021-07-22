@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 /**
- *路由 
+ *路由
  */
 app.use(postRouter);
 

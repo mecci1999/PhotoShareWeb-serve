@@ -6,10 +6,10 @@ import { Request, Response, NextFunction } from 'express';
 export const requestUrl = (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   console.log(request.url);
-  next();       //其他接口也可以接着调用这个方法
+  next(); //其他接口也可以接着调用这个方法
 };
 
 /**
@@ -19,19 +19,22 @@ export const defaultErrorHandler = (
   error: any,
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
+  if (error.message) {
+    console.log('错误异常', error.message);
+  }
   let statusCode: number, message: string;
 
   /**
    * 处理异常
    */
-  switch (error.message){
+  switch (error.message) {
     default:
       statusCode = 500;
       message = '服务暂时出了点问题 ~~';
       break;
   }
 
-  response.status(statusCode).send({message});
+  response.status(statusCode).send({ message });
 };

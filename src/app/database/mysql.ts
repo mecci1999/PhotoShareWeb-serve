@@ -4,9 +4,8 @@ import {
   MYSQL_PORT,
   MYSQL_USER,
   MYSQL_PASSWORD,
-  MYSQL_DATABASE
+  MYSQL_DATABASE,
 } from '../app.config';
-
 
 /**
  * 创建数据仓库的连接，并导出
@@ -16,5 +15,5 @@ export const connection = mysql.createConnection({
   port: parseInt(MYSQL_PORT, 10),
   user: MYSQL_USER,
   password: MYSQL_PASSWORD,
-  database: MYSQL_DATABASE
+  database: MYSQL_DATABASE,
 });
