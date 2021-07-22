@@ -8,6 +8,7 @@ export const index = (
   response: Response,
   next: NextFunction
 ) => {
+  //如果出现异常
   if (request.headers.authorization !== 'SECRET'){
     return next(new Error());
   }
