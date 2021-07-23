@@ -17,7 +17,12 @@ router.post('/posts',postController.store);
 /**
  * 更新内容
  */
-router.patch('/posts/:postId',postController.update)
+router.patch('/posts/:postId',postController.update);
+
+/**
+ * 删除内容
+ */
+router.delete('/posts/:postId',postController.destory);
 
 /**
  * 导出路由
