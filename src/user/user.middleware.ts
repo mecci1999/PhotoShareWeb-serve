@@ -5,7 +5,7 @@ import * as userService from './user.service';
 /**
  * 验证用户数据
  */
-export const validataUserData = (
+export const validataUserData = async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -18,7 +18,13 @@ export const validataUserData = (
   //验证必填信息
   if(!name) return next(new Error('NAME_IS_REQUIRED'));
   if(!password) return next(new Error('PASSWORD_IS_REQUIRED'));
-
+  
+  /**
+   * 验证用户名的代码
+   */
+  const user = await userService.getuserName(name);
+  if(user) return next(new Error('USER_ALREADY_EXIST'));
   //下一步操作
   next();
 };
+

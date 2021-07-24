@@ -38,9 +38,13 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '请输入密码 ~~';
       break;
+    case 'USER_ALREADY_EXIST':
+      statusCode = 409;//有冲突
+      message = '用户名已存在，请修改 ~~';
+      break;
     default:
       statusCode = 500;
-      message = '服务暂时出了点问题 ~~';
+      message = '服务器暂时出了点问题 ~~';
       break;
   }
 
