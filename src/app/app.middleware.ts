@@ -42,9 +42,13 @@ export const defaultErrorHandler = (
       statusCode = 409;//有冲突
       message = '用户名已存在，请修改 ~~';
       break;
-    case 'USER_DONE_NOT_EXIST':
+    case 'USER_DOES_NOT_EXIST':
       statusCode = 400;
       message = '用户不存在 ~~';
+      break;
+    case 'PASSWORD_DOES_NOT_MATCH':
+      statusCode = 400;
+      message = '密码不对 ~~';
       break;
     default:
       statusCode = 500;
