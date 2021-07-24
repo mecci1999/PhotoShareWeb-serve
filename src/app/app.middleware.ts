@@ -42,6 +42,10 @@ export const defaultErrorHandler = (
       statusCode = 409;//有冲突
       message = '用户名已存在，请修改 ~~';
       break;
+    case 'USER_DONE_NOT_EXIST':
+      statusCode = 400;
+      message = '用户不存在 ~~';
+      break;
     default:
       statusCode = 500;
       message = '服务器暂时出了点问题 ~~';

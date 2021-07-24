@@ -21,7 +21,7 @@ export const validataUserData = async (
   if(!password) return next(new Error('PASSWORD_IS_REQUIRED'));
   
   /**
-   * 验证用户名的代码
+   * 验证用户名是否存在
    */
   const user = await userService.getuserName(name);
   if (user) return next(new Error('USER_ALREADY_EXIST'));
