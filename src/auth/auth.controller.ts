@@ -36,5 +36,6 @@ export const validata = (
   response: Response,
   next: NextFunction
 ) => {
+  console.log(request.user);
   response.sendStatus(200);
 };

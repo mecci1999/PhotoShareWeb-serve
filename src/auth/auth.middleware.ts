@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import * as userService from '../user/user.service';
 import { PUBLIC_KEY } from '../app/app.config';
+import { TokenPayload  } from './auth.interface';
 
 /**
  * 验证用户登录数据
@@ -59,13 +60,15 @@ export const authGuard = (
     if (!token) throw new Error();
 
     // 验证令牌
-    jwt.verify(token, `${PUBLIC_KEY}`, {algorithms: ['RS256']});
+    const decoded = jwt.verify(token, `${PUBLIC_KEY}`, {algorithms: ['RS256']});
     
+    // 在请求里面添加用户
+    request.user = decoded as TokenPayload;
+
     // 下一步
     next();
 
   } catch (error) {
     next(new Error('UNAUTHORIZED'));
   }
-
 };
