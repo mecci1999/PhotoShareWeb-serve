@@ -9,6 +9,10 @@ const router = express.Router();
  */
 router.post('/login', authMidderware.validataLoginData, authController.login);
 
+/**
+ * 验证用户登录接口
+ */
+router.post('/auth/validata', authMidderware.authGuard, authController.validata);
 
 /**
  * 导出路由

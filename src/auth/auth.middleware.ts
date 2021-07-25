@@ -51,7 +51,7 @@ export const authGuard = (
 
   try {
     // 提取Authorization
-    const authorization = request.header('Authorization ');
+    const authorization = request.header('Authorization');
     if (!authorization) throw new Error();
 
     // 提取JWT令牌
