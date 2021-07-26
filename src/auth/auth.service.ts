@@ -45,7 +45,7 @@ export const prossess = async (options: ProssessOptions) => {
 
   // 执行查询
   const [...data] = await connection.promise().query(statement, [resourceId, userId]);
-
+  
   // 提供数据
-  return data[0].count ? true : false;
+  return data[0][0].count ? true : false;
 };
