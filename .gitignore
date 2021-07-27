@@ -21,3 +21,4 @@ npm-debug.log*
 #app
 .env*
 config/*.key
+/uploads
