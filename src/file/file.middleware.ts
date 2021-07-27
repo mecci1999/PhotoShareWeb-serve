@@ -33,8 +33,22 @@ export const fileProcessor = async (
   } catch (error) {
     return next(error);
   }
+  //const {imageSize, tags} = image['_exif'];
+  //准备文件数据
+  const {imageSize, tags} = {
+    imageSize: {
+      height: 1800,
+      width: 900
+    },
+    tags:{}
+  };
 
-  console.log(image);
+  //在请求中添加文件数据
+  request.fileMetaData = {
+    width: imageSize.width,
+    height: imageSize.height,
+    metadata: JSON.stringify(tags)
+  }
 
   // 下一步
   next();

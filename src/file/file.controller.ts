@@ -30,7 +30,8 @@ export const store = async (
     const data = await fileService.createFile({
       ...fileInfo,
       userId,
-      postId
+      postId,
+      ...request.fileMetaData
     });
 
     // 做出响应
