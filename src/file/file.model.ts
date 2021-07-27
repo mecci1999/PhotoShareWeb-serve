@@ -4,6 +4,6 @@ export class FileModel {
   mimetype!: string;
   filename!: string;
   size!: number;
-  userId!: number;
-  postId?: number;
+  userId?: number;
+  postId?: any;
 }
