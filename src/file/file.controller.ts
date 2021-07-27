@@ -39,3 +39,30 @@ export const store = async (
       next(error); 
   }
 };
+
+/**
+* 文件服务
+*/
+export const serve = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  // 获取文件ID，从地址参数里得到
+  const { fileId } = request.params;
+
+  try {
+    //查找文件
+    const file = await fileService.findFileById(parseInt(fileId, 10));
+
+    //作出响应
+    response.sendFile(file.filename, {
+      root: 'uploads',
+      headers: {
+        'Content-Type': file.mimetype,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
