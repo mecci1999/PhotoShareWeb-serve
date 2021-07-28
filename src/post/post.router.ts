@@ -26,6 +26,11 @@ router.patch('/posts/:postId', authGuard, accessControl({prossession: true}), po
 router.delete('/posts/:postId', authGuard, accessControl({prossession: true}), postController.destory);
 
 /**
+ * 添加内容标签
+ */
+router.post('/posts/:postId/tag', authGuard, accessControl({prossession: true}), postController.storePostTag);
+
+/**
  * 导出路由
  */
 export default router;

@@ -84,7 +84,7 @@ export const deletePost = async (postId: number) => {
 */
 export const creatPostTag = async (
   postId: number,
-  tagId: number
+  tagId?: number
 ) => {
   // 准备查询
   const statement = `
@@ -104,7 +104,7 @@ export const creatPostTag = async (
 */
 export const postHasTag = async (
   postId: number,
-  tagId: number
+  tagId?: number
 ) => {
   // 准备查询
   const statement = `
