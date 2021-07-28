@@ -31,6 +31,11 @@ router.delete('/posts/:postId', authGuard, accessControl({prossession: true}), p
 router.post('/posts/:postId/tag', authGuard, accessControl({prossession: true}), postController.storePostTag);
 
 /**
+ * 移除内容标签
+ */
+router.delete('/posts/:postId/tag', authGuard, accessControl({prossession: true}), postController.destroyPostTag);
+
+/**
  * 导出路由
  */
 export default router;
