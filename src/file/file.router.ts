@@ -16,6 +16,11 @@ router.post('/files', authGuard, fileInterceptor, fileProcessor, fileController.
 router.get('/files/:fileId/serve', fileController.serve);
 
 /**
+ * 文件信息接口
+ */
+router.get('/files/:fileId/metadata', fileController.metadata);
+
+/**
  * 导出路由
  */
 export default router;
