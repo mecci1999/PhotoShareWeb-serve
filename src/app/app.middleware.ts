@@ -62,6 +62,10 @@ export const defaultErrorHandler = (
       statusCode = 404;
       message = '文件不存在 ~~';
       break;
+    case 'TAG_ALREADY_EIXST':
+      statusCode = 409;
+      message = '标签已存在，请修改 ~~';
+      break;
     default:
       statusCode = 500;
       message = '服务器暂时出了点问题 ~~';
