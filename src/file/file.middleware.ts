@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import multer from "multer";
 import Jimp from "jimp";
+import { ImageResizer } from "./file.service";
 
 /**
  * 创建一个Multer
@@ -37,8 +38,8 @@ export const fileProcessor = async (
   //准备文件数据
   const {imageSize, tags} = {
     imageSize: {
-      height: 1800,
-      width: 900
+      height: image.bitmap.height,
+      width: image.bitmap.width
     },
     tags:{}
   };
@@ -49,6 +50,9 @@ export const fileProcessor = async (
     height: imageSize.height,
     metadata: JSON.stringify(tags)
   }
+
+  //处理图像尺寸
+  ImageResizer(image, request.file);
 
   // 下一步
   next();
