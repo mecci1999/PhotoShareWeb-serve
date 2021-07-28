@@ -78,3 +78,23 @@ export const deletePost = async (postId: number) => {
   //提供数据
   return data;
 };
+
+/**
+* 保存内容标签
+*/
+export const creatPostTag = async (
+  postId: number,
+  tagId: number
+) => {
+  // 准备查询
+  const statement = `
+    INSERT INTO post_tag (postId, tagId)
+    VALUES(?, ?)
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement,[postId, tagId]);
+
+  // 提供数据
+  return data;
+};
