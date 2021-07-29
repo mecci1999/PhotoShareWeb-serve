@@ -38,3 +38,26 @@ export const isReplyComment = async (
   // 提供数据
   return data[0][0].parentId ? true : false;
 };
+
+/**
+* 更改评论
+*/
+export const updateComment = async (
+  comment: CommentModel
+) => {
+  // 准备数据
+  const {id, content} = comment;
+
+  // 准备查询
+  const statement = `
+    UPDATE comment
+    SET ?
+    WHERE ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, [content, id]);
+
+  // 提供数据
+  return data;
+};
