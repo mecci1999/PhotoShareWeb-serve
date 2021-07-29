@@ -70,6 +70,10 @@ export const defaultErrorHandler = (
       statusCode = 409;
       message = '当前内容已经拥有这个标签 ~~';
       break;
+    case 'UNABLE_TO_REPLY_THIS_COMMENT':
+      statusCode = 400;
+      message = '不能回复当前评论 ~~';
+      break;
     default:
       statusCode = 500;
       message = '服务器暂时出了点问题 ~~';
