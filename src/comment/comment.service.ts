@@ -51,8 +51,8 @@ export const updateComment = async (
   // 准备查询
   const statement = `
     UPDATE comment
-    SET ?
-    WHERE ?
+    SET content = ?
+    WHERE id = ?
   `;
 
   // 执行查询
