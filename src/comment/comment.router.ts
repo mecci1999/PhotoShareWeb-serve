@@ -21,6 +21,11 @@ router.post('/comments/:commentId/reply', authGuard, commentController.reply);
 router.patch('/comments/:commentId', authGuard, accessControl({prossession: true}), commentController.update);
 
 /**
+ * 删除评论
+ */
+router.delete('/comments/:commentId', authGuard, accessControl({prossession: true}), commentController.destroy);
+
+/**
  * 导出默认接口
  */
 export default router;
