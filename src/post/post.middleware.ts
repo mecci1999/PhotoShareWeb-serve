@@ -36,3 +36,42 @@ export const sort = async (
   //下一步
   next();
 };
+
+/**
+* 过滤列表
+*/
+export const filter = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  //获取数据
+  const {tag, user, action} = request.query;
+
+  //默认过滤
+  request.filter = {
+    name: 'defualt',
+    sql: 'post.id IS NOT NULL',
+  };
+
+  //按标签名进行过滤
+  if (tag && !user && !action) {
+    request.filter = {
+      name: 'tagName',
+      sql: 'tag.name = ?',
+      param: `${tag}`,
+    };
+  }
+
+  //过滤用户发布的问题
+  if (user && action == 'published' && !tag) {
+    request.filter = {
+      name: 'userPublished',
+      sql: 'user.id = ?',
+      param: `${user}`,
+    };
+  }
+
+  //下一步
+  next();
+};

@@ -2,13 +2,13 @@ import { connection } from '../app/database/mysql';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
 
-interface GetPostsOptionsFilter {
+export interface GetPostsOptionsFilter {
   name: string;
   sql?: string;
   param?: string; 
 }
 
-interface GetPostsOptions {
+export interface GetPostsOptions {
   sort?: string;
   filter?: GetPostsOptionsFilter;
 }
