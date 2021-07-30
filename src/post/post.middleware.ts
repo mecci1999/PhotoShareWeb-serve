@@ -100,8 +100,7 @@ export const paginate = async (
     limit: limit,
     offset: offset
   };
-  console.log(parseInt(`${POSTS_PRE_PAGE}`, 10));
-  console.log(limit,offset);
+  
   //下一步
   next();
 };

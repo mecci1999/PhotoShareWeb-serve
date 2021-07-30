@@ -173,3 +173,33 @@ export const deletePostTag = async (
   // 提供数据
   return data;
 };
+
+/**
+* 统计内容数量
+*/
+export const getPostsTotalCount = async (
+  options: GetPostsOptions
+) => {
+  // 准备数据
+  const {filter} = options;
+
+  // SQL 参数
+  const params = [filter?.param];
+
+  // 准备查询
+  const statement = `
+    SELECT
+      COUNT(DISTINCT post.id) AS total
+    FROM post
+    ${sqlFragment.leftJoinOneFile}
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.leftJoinTag}
+    WHERE ${filter?.sql}
+  `;
+
+  //执行查询
+  const [...data] = await connection.promise().query(statement, params);
+
+  //提供数据
+  return data[0][0].total;
+};
