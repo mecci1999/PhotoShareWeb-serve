@@ -1,13 +1,21 @@
 import { connection } from '../app/database/mysql';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
+
+interface GetPostsOptions {
+  sort?: string;
+}
+
 /**
  * 定义一个函数：获取内容列表
  */
-export const getPosts = async () => {
+export const getPosts = async (options: GetPostsOptions) => {
   /**
    * 获取内容列表
    */
+
+  //获取数据
+  const {sort} = options;    
 
   const statement = `
   SELECT 
@@ -23,6 +31,7 @@ export const getPosts = async () => {
   ${sqlFragment.leftJoinOneFile}
   ${sqlFragment.leftJoinTag}
   GROUP BY post.id
+  ORDER BY ${sort}
   `;
   const [data] = await connection.promise().query(statement);
   return data;
