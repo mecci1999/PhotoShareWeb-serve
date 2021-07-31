@@ -11,6 +11,11 @@ const router = express.Router();
 router.post('/posts/:postId/like', authGuard, likeController.storeUserLikePosr);
 
 /**
+ * 取消用户点赞
+ */
+router.delete('/posts/:postId/like', authGuard, likeController.destroyUserLikePost);
+
+/**
  * 导出默认接口
  */
 export default router;
