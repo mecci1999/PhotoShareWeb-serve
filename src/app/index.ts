@@ -5,7 +5,9 @@ import authRouter from '../auth/auth.router';
 import fileRouter from '../file/file.router';
 import tagRouter from '../tag/tag.router';
 import commentRouter from '../comment/comment.router';
+import avatarRouter from '../avatar/avatar.router';
 import { defaultErrorHandler } from './app.middleware';
+
 /**
  * 创建应用
  */
@@ -19,7 +21,15 @@ app.use(express.json());
 /**
  *路由
  */
-app.use(postRouter, userRouter, authRouter, fileRouter, tagRouter, commentRouter);
+app.use(
+  postRouter,
+  userRouter,
+  authRouter,
+  fileRouter,
+  tagRouter, 
+  commentRouter,
+  avatarRouter
+  );
 
 /**
  * 使用异常处理器
