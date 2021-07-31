@@ -15,6 +15,11 @@ avatarMiddleware.avatarProcessor,
 avatarController.store);
 
 /**
+ * 头像服务
+ */
+router.get('/users/:userId/avatar', avatarController.serve);
+
+/**
  * 默认导出接口
  */
 export default router;
