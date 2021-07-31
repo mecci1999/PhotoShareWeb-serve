@@ -8,7 +8,11 @@ const router = express.Router();
 /**
  * 上传头像文件
  */
-router.post('/avatar', authGuard, avatarMiddleware.avatarInterceptor, avatarController.store);
+router.post('/avatar',
+authGuard,
+avatarMiddleware.avatarInterceptor,
+avatarMiddleware.avatarProcessor,
+avatarController.store);
 
 /**
  * 默认导出接口
