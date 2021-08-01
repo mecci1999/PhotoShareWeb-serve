@@ -23,3 +23,26 @@ export const store = async (
   }
 };
 
+/**
+* 用户账户
+*/
+export const show = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  // 准备数据
+  const {userId} = request.params;
+
+  //调取用户
+  try {
+    const user = await userService.getUserById(parseInt(userId, 10));
+
+    if (!user) throw new Error('USER_NOT_FOUND');
+
+    //做出响应
+    response.send(user);
+  } catch (error) {
+    next(error);
+  }
+};

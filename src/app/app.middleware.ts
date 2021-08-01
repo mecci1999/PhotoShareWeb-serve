@@ -78,9 +78,13 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '不能上传此类型文件 ~~';
       break;
-  case 'NOT_FOUND':
+    case 'NOT_FOUND':
       statusCode = 404;
       message = '没有找到 ~~';
+      break;
+    case 'USER_NOT_FOUND':
+      statusCode = 404;
+      message = '没有找到该用户 ~~';
       break;
     default:
       statusCode = 500;

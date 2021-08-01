@@ -26,7 +26,7 @@ import { prossess } from './auth.service';
   /**
    * 验证用户是否存在
    */
-  const user = await userService.getuserName(name, {password: true});
+  const user = await userService.getUserByName(name, {password: true});
   if (!user) return next(new Error('USER_DOES_NOT_EXIST'));
 
   //验证用户密码

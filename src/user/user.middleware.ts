@@ -23,7 +23,7 @@ export const validataUserData = async (
   /**
    * 验证用户名是否存在
    */
-  const user = await userService.getuserName(name);
+  const user = await userService.getUserByName(name);
   if (user) return next(new Error('USER_ALREADY_EXIST'));
   //下一步操作
   next();
