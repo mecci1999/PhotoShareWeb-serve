@@ -15,7 +15,7 @@ export const sqlFragment = {
       'avatar', IF(COUNT(avatar.id),1,NULL)
     ) AS user
   `,
-  leftJoinPosr: `
+  leftJoinPost: `
     LEFT JOIN post
     ON post.id = comment.postId
   `,
