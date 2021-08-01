@@ -1,4 +1,5 @@
 import { connection } from "../app/database/mysql";
+import { sqlFragment } from "./comment.provider";
 import { CommentModel } from "./comment.model";
 
 /**
@@ -76,6 +77,37 @@ export const deleteComment = async (
 
   // 执行查询
   const [data] = await connection.promise().query(statement, commentId);
+
+  // 提供数据
+  return data;
+};
+
+/**
+* 获得评论列表
+*/
+export const getComments = async () => {
+  // SQL 参数
+  let params: Array<any>= [];
+  
+  // 准备查询
+  const statement = `
+    SELECT
+      comment.id,
+      comment.content,
+      ${sqlFragment.user},
+      ${sqlFragment.post}
+    FROM
+      comment
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.leftJoinPost}
+    GROUP BY
+      comment.id
+    ORDER BY
+      comment.id DESC
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, params);
 
   // 提供数据
   return data;
