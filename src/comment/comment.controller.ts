@@ -3,6 +3,7 @@ import {
   createComment,
   deleteComment,
   getComments, 
+  getCommentsTotalCount, 
   isReplyComment,
   updateComment 
 } from './comment.service';
@@ -134,6 +135,16 @@ export const index = async (
   response: Response,
   next: NextFunction
 ) => {
+  // 统计评论数量
+  try {
+    const totalCount = await getCommentsTotalCount({filter:request.filter});
+
+    // 做出响应
+    response.header('X-Total-Count', totalCount);
+  } catch (error) {
+    next(error);
+  }
+
   try {
     // 获得评论列表
     const comment = await getComments({ filter:request.filter, pagination: request.pagination });
