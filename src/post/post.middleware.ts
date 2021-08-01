@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { off } from "process";
-import { POSTS_PRE_PAGE } from "../app/app.config";
 
 /**
 * 排序方式
@@ -90,26 +89,21 @@ export const filter = async (
 /**
 * 内容分页
 */  
-export const paginate = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  // 准备数据
-  // 当前页面
-  const {page = 1} = request.query;
-
-  // 每页内容数量,默认30
-  const limit = parseInt(`${POSTS_PRE_PAGE}`, 10) || 30;
-
-  // 计算出便宜量
-  const offset = limit * (parseInt(`${page}`, 10) - 1);
-
-  request.pagination = {
-    limit: limit,
-    offset: offset
-  };
+export const paginate = (itemPerPage: number) => {
+  return async (request: Request, response: Response, next: NextFunction) => {
+    // 准备数据
+    // 当前页面
+    const {page = 1} = request.query;
   
-  //下一步
-  next();
+    // 每页内容数量,默认30
+    const limit = itemPerPage || 30;
+  
+    // 计算出便宜量
+    const offset = limit * (parseInt(`${page}`, 10) - 1);
+  
+    request.pagination = {limit: limit, offset: offset};
+
+    //下一步
+    next();
+  };
 };

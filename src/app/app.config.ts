@@ -28,4 +28,4 @@ PUBLIC_KEY = Buffer.from(`${PUBLIC_KEY}`,'base64').toString();
 /**
  * 内容分页
  */
-export const {POSTS_PRE_PAGE} = process.env;
+export const POSTS_PRE_PAGE = parseInt(`${process.env['POSTS_PRE_PAGE']}`, 10);
