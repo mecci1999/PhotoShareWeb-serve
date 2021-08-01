@@ -33,6 +33,11 @@ router.delete('/comments/:commentId', authGuard, accessControl({prossession: tru
 router.get('/comments', commentMiddleware.filter, paginate(COMMENTS_PRE_PAGE), commentController.index);
 
 /**
+ * 回复评论列表
+ */
+router.get('/comments/:commentId/replies', commentController.indexReplied);
+
+/**
  * 导出默认接口
  */
 export default router;
