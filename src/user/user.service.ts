@@ -38,7 +38,7 @@ export const getUser = (condition: string) => {
       IF (
         COUNT(avatar.id), 1, NULL
       ) AS avatar
-      ${password? ',password':''}
+      ${password ? ',password':''}
       FROM
         user
       LEFT JOIN avatar
@@ -64,3 +64,27 @@ export const getUserByName = getUser('user.name');
  * 按用户 ID 查找用户
  */
  export const getUserById = getUser('user.id');
+
+ /**
+ * 用户更新数据
+ */
+ export const updateUser = async (
+   userId: number, userData: UserModel,
+ ) => {
+   // 准备查询
+   const statement = `
+      UPDATE
+        user
+      SET ?
+      WHERE user.id = ?
+   `;
+
+  //  // SQL 参数
+  //  const params = [userData, userId];
+
+   // 执行查询
+   const [data] = await connection.promise().query(statement, [userData, userId]);
+
+   // 提供数据
+   return data;
+ };
