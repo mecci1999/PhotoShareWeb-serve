@@ -2,7 +2,8 @@ import express from 'express';
 import * as commentMiddleware from './comment.middleware';
 import * as commentController from './comment.controller';
 import { accessControl, authGuard } from '../auth/auth.middleware';
-import {filter} from './comment.middleware';
+import { paginate } from '../post/post.middleware';
+import { COMMENTS_PRE_PAGE } from '../app/app.config';
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.delete('/comments/:commentId', authGuard, accessControl({prossession: tru
 /**
  * 评论列表
  */
-router.get('/comments', commentMiddleware.filter, commentController.index);
+router.get('/comments', commentMiddleware.filter, paginate(COMMENTS_PRE_PAGE), commentController.index);
 
 /**
  * 导出默认接口
