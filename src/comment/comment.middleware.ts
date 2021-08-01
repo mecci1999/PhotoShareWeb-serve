@@ -8,10 +8,22 @@ export const filter = async (
   response: Response,
   next: NextFunction
 ) => {
+  // 解构查询
+  const {post, user, action} = request.query;
+
   // 默认的过滤
   request.filter = {
     name: 'default',
     sql: 'comment.parentId IS NULL',
+  }
+
+  // 内容的评论
+  if (post && !user && !action){
+    request.filter = {
+      name: 'postComments',
+      sql: 'comment.parentId IS NULL AND postId = ?',
+      param: `${post}`,
+    }
   }
 
   //下一步
