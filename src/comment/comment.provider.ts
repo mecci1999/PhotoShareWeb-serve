@@ -26,15 +26,25 @@ export const sqlFragment = {
     ) AS post
   `,
   repliedComment: `
-      (
-        SELECT
-          JSON_OBJECT(
-            'id', repliedComment.id,
-            'content', repliedComment.content
-          )
-        FROM
-            comment repliedComment
-        WHERE comment.parentId = repliedComment.id
-      ) AS repliedComment
+    (
+      SELECT
+        JSON_OBJECT(
+          'id', repliedComment.id,
+          'content', repliedComment.content
+        )
+      FROM
+          comment repliedComment
+      WHERE comment.parentId = repliedComment.id
+    ) AS repliedComment
+  `,
+  totalReplies: `
+    (
+      SELECT
+        COUNT(reply.id)
+      FROM
+        comment reply
+      WHERE
+        reply.parentId = comment.id
+    ) AS totalReplies
   `,
 };
