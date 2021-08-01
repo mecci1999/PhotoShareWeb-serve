@@ -17,12 +17,21 @@ export const filter = async (
     sql: 'comment.parentId IS NULL',
   }
 
-  // 内容的评论
+  // 内容的评论列表
   if (post && !user && !action){
     request.filter = {
       name: 'postComments',
-      sql: 'comment.parentId IS NULL AND postId = ?',
+      sql: 'comment.parentId IS NULL AND comment.postId = ?',
       param: `${post}`,
+    }
+  }
+
+  // 用户的评论列表
+  if (user && action == 'published' && !post) {
+    request.filter = {
+      name: 'userPublished',
+      sql: 'comment.parentId IS NULL AND comment.userId = ?',
+      param: `${user}`,
     }
   }
 
