@@ -45,8 +45,6 @@ export const getPosts = async (options: GetPostsOptions) => {
     var { id: userId, name: userName } = currentUser;
   }
 
-  console.log(currentUser);
-
   // 定义用户是否点赞过内容的sql语句
   const sqlUserLikedPost = {
     currentLiked: `
@@ -224,7 +222,33 @@ export const getPostsTotalCount = async (options: GetPostsOptions) => {
 /**
  * 按内容 ID 查找相关内容
  */
-export const getPostById = async (postId: number) => {
+export interface GetPostByIdOptions {
+  currentUser?: TokenPayload;
+}
+
+export const getPostById = async (
+  postId: number,
+  options: GetPostByIdOptions = {},
+) => {
+  const { currentUser } = options;
+
+  if (currentUser) {
+    var { id: userId, name: userName } = currentUser;
+  }
+
+  // 定义用户是否点赞过内容的sql语句
+  const sqlUserLikedPost = {
+    currentLiked: `
+  (
+    SELECT COUNT (user_like_post.postId)
+    FROM user_like_post
+    WHERE
+      user_like_post.postId = post.id
+      && user_like_post.userId = ${userId}
+  ) as liked
+  `,
+  };
+
   // 准备查询
   const statement = `
     SELECT
@@ -236,8 +260,8 @@ export const getPostById = async (postId: number) => {
       ${sqlFragment.tags},
       ${sqlFragment.totalComments},
       ${sqlFragment.totalLikes}
-    FROM
-      post
+      ${userName == 'anonymous' ? '' : `,${sqlUserLikedPost.currentLiked}`}
+    FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinOneFile}
     ${sqlFragment.leftJoinTag}
