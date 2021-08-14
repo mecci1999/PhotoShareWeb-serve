@@ -1,19 +1,19 @@
-import { Request, Response, NextFunction } from "express";
-import { off } from "process";
+import { Request, Response, NextFunction } from 'express';
+import { off } from 'process';
 
 /**
-* 排序方式
-*/
+ * 排序方式
+ */
 export const sort = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //获取客户端的地址查询符
-  const {sort} = request.query;
+  const { sort } = request.query;
 
   //排序用的 SQL
-  let sqlSort : string;
+  let sqlSort: string;
 
   //设置排序用的SQL
   switch (sort) {
@@ -27,7 +27,7 @@ export const sort = async (
       sqlSort = 'totalComments DESC, post.id DESC';
       break;
     default:
-      sqlSort = 'post.id DESC'
+      sqlSort = 'post.id DESC';
       break;
   }
 
@@ -39,15 +39,15 @@ export const sort = async (
 };
 
 /**
-* 过滤列表
-*/
+ * 过滤列表
+ */
 export const filter = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //获取数据
-  const {tag, user, action} = request.query;
+  const { tag, user, action } = request.query;
 
   //默认过滤
   request.filter = {
@@ -87,21 +87,22 @@ export const filter = async (
 };
 
 /**
-* 内容分页
-*/  
+ * 内容分页
+ */
+
 export const paginate = (itemPerPage: number) => {
   return async (request: Request, response: Response, next: NextFunction) => {
     // 准备数据
     // 当前页面
-    const {page = 1} = request.query;
-  
+    const { page = 1 } = request.query;
+
     // 每页内容数量,默认30
     const limit = itemPerPage || 30;
-  
+
     // 计算出便宜量
     const offset = limit * (parseInt(`${page}`, 10) - 1);
-  
-    request.pagination = {limit: limit, offset: offset};
+
+    request.pagination = { limit: limit, offset: offset };
 
     //下一步
     next();
