@@ -110,7 +110,7 @@ export const currentUser = (
   next: NextFunction,
 ) => {
   let user: TokenPayload = {
-    id: parseInt(`${null}`, 10),
+    id: parseInt('', 10),
     name: 'anonymous',
   };
 

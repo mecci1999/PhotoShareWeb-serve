@@ -1,4 +1,5 @@
 import { connection } from '../app/database/mysql';
+import { TokenPayload } from '../auth/auth.interface';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
 
@@ -17,6 +18,7 @@ export interface GetPostsOptions {
   sort?: string;
   filter?: GetPostsOptionsFilter;
   pagination?: GetPostsOptionsPagination;
+  currentUser?: TokenPayload;
 }
 
 /**
@@ -28,7 +30,7 @@ export const getPosts = async (options: GetPostsOptions) => {
    */
 
   //获取数据
-  const { sort, filter, pagination } = options;
+  const { sort, filter, pagination, currentUser } = options;
 
   // SQL 参数
   let params: Array<any> = [pagination?.limit, pagination?.offset];
@@ -38,8 +40,28 @@ export const getPosts = async (options: GetPostsOptions) => {
     params = [filter?.param, ...params];
   }
 
+  if (currentUser) {
+    // 当前用户
+    var { id: userId, name: userName } = currentUser;
+  }
+
+  console.log(currentUser);
+
+  // 定义用户是否点赞过内容的sql语句
+  const sqlUserLikedPost = {
+    currentLiked: `
+  (
+    SELECT COUNT (user_like_post.postId)
+    FROM user_like_post
+    WHERE
+      user_like_post.postId = post.id
+      && user_like_post.userId = ${userId}
+  ) as liked
+  `,
+  };
+
   const statement = `
-  SELECT 
+    SELECT 
     post.id,
     post.title,
     post.content,
@@ -48,17 +70,19 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.file},
     ${sqlFragment.tags},
     ${sqlFragment.totalLikes}
-  FROM post
-  ${sqlFragment.leftJoinUser}
-  ${sqlFragment.innerJoinOneFile}
-  ${sqlFragment.leftJoinTag}
-  ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-  WHERE ${filter?.sql}
-  GROUP BY post.id
-  ORDER BY ${sort}
-  LIMIT ?
-  OFFSET ?
-  `;
+    ${userName == 'anonymous' ? '' : `,${sqlUserLikedPost.currentLiked}`}
+    FROM post
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.innerJoinOneFile}
+    ${sqlFragment.leftJoinTag}
+    ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
+    WHERE ${filter?.sql}
+    GROUP BY post.id
+    ORDER BY ${sort}
+    LIMIT ?
+    OFFSET ?
+    `;
+
   const [data] = await connection.promise().query(statement, params);
   return data;
 };
