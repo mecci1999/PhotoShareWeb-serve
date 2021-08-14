@@ -9,6 +9,7 @@ import avatarRouter from '../avatar/avatar.router';
 import likeRouter from '../like/like.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
+import { currentUser } from '../auth/auth.middleware';
 
 /**
  * 创建应用
@@ -21,19 +22,24 @@ const app = express();
 app.use(express.json());
 
 /**
- *路由
+ * 当前用户
+ */
+app.use(currentUser);
+
+/**
+ * 应用路由
  */
 app.use(
   postRouter,
   userRouter,
   authRouter,
   fileRouter,
-  tagRouter, 
+  tagRouter,
   commentRouter,
   avatarRouter,
   likeRouter,
-  appRouter
-  );
+  appRouter,
+);
 
 /**
  * 使用异常处理器

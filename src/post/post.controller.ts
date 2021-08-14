@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
-import { 
+import {
   getPosts,
-  createPost, 
-  updatePost, 
+  createPost,
+  updatePost,
   deletePost,
   creatPostTag,
   postHasTag,
   deletePostTag,
-  getPostsTotalCount, 
-  getPostById
+  getPostsTotalCount,
+  getPostById,
 } from './post.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
@@ -20,11 +20,11 @@ import { createTag, getTagByName } from '../tag/tag.service';
 export const index = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //获得内容数量
   try {
-    const totalCount = await getPostsTotalCount({filter: request.filter});
+    const totalCount = await getPostsTotalCount({ filter: request.filter });
 
     //响应头部数据
     response.header('X-Total-Count', totalCount);
@@ -33,13 +33,16 @@ export const index = async (
   }
 
   try {
-    const posts = await getPosts({sort: request.sort, filter: request.filter, pagination: request.pagination});
+    const posts = await getPosts({
+      sort: request.sort,
+      filter: request.filter,
+      pagination: request.pagination,
+    });
     response.send(posts);
   } catch (error) {
     next(error);
   }
 };
-
 
 /**
  * 创建内容的处理器
@@ -47,21 +50,20 @@ export const index = async (
 export const store = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //准备好需要存储的数据
-  const {title, content} = request.body;
-  const {id: userId} = request.user;
+  const { title, content } = request.body;
+  const { id: userId } = request.user;
 
   //创建内容
   try {
-    const data = await createPost({title, content, userId});
+    const data = await createPost({ title, content, userId });
     response.status(201).send(data);
   } catch (error) {
     next(error);
   }
 };
-
 
 /**
  * 更新内容的处理器
@@ -69,21 +71,20 @@ export const store = async (
 export const update = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //获取更新内容的ID
-  const {postId} = request.params;
+  const { postId } = request.params;
   //准备更新数据
-  const post = _.pick(request.body,['title','content']);
+  const post = _.pick(request.body, ['title', 'content']);
   //更新内容
   try {
-    const data = await updatePost(parseInt(postId,10),post);
+    const data = await updatePost(parseInt(postId, 10), post);
     response.send(data);
   } catch (error) {
     next(error);
   }
 };
-
 
 /**
  * 删除内容的处理器a
@@ -91,13 +92,13 @@ export const update = async (
 export const destory = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //获取要删除的ID
-  const {postId} = request.params;
+  const { postId } = request.params;
   //删除内容
   try {
-    const data = await deletePost(parseInt(postId,10));
+    const data = await deletePost(parseInt(postId, 10));
     response.send(data);
   } catch (error) {
     next(error);
@@ -105,16 +106,16 @@ export const destory = async (
 };
 
 /**
-* 添加内容标签
-*/
+ * 添加内容标签
+ */
 export const storePostTag = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {postId} = request.params;
-  const {name} = request.body;
+  const { postId } = request.params;
+  const { name } = request.body;
 
   let tag: TagModel;
 
@@ -139,8 +140,8 @@ export const storePostTag = async (
   // 没有找到标签
   if (!tag) {
     try {
-      const data = await createTag({name});
-      tag = {id: data.insertId};
+      const data = await createTag({ name });
+      tag = { id: data.insertId };
     } catch (error) {
       return next(error);
     }
@@ -158,16 +159,16 @@ export const storePostTag = async (
 };
 
 /**
-* 删除内容标签
-*/
+ * 删除内容标签
+ */
 export const destroyPostTag = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {postId} = request.params;
-  const {tagId} = request.body;
+  const { postId } = request.params;
+  const { tagId } = request.body;
 
   // 移除内容标签
   try {
@@ -180,15 +181,15 @@ export const destroyPostTag = async (
 };
 
 /**
-* 单个内容
-*/
+ * 单个内容
+ */
 export const show = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {postId} = request.params;
+  const { postId } = request.params;
 
   // 调取内容
   try {
