@@ -13,6 +13,7 @@ import {
 } from './post.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
+import { deletePostFiles, getPostFiles } from '../file/file.service';
 
 /**
  * 内容列表
@@ -88,7 +89,7 @@ export const update = async (
 };
 
 /**
- * 删除内容的处理器a
+ * 删除内容的处理器
  */
 export const destory = async (
   request: Request,
@@ -97,8 +98,15 @@ export const destory = async (
 ) => {
   //获取要删除的ID
   const { postId } = request.params;
+
   //删除内容
   try {
+    const files = await getPostFiles(parseInt(postId, 10));
+
+    if (files.length) {
+      await deletePostFiles(files);
+    }
+
     const data = await deletePost(parseInt(postId, 10));
     response.send(data);
   } catch (error) {
