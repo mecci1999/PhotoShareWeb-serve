@@ -99,7 +99,7 @@ export const paginate = (itemPerPage: number) => {
     // 每页内容数量,默认30
     const limit = itemPerPage || 30;
 
-    // 计算出便宜量
+    // 计算出偏移量
     const offset = limit * (parseInt(`${page}`, 10) - 1);
 
     request.pagination = { limit: limit, offset: offset };

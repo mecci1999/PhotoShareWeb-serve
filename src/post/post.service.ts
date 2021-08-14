@@ -5,12 +5,12 @@ import { sqlFragment } from './post.provider';
 export interface GetPostsOptionsFilter {
   name: string;
   sql?: string;
-  param?: string; 
+  param?: string;
 }
 
 export interface GetPostsOptionsPagination {
-  limit: number,
-  offset: number,
+  limit: number;
+  offset: number;
 }
 
 export interface GetPostsOptions {
@@ -28,7 +28,7 @@ export const getPosts = async (options: GetPostsOptions) => {
    */
 
   //获取数据
-  const {sort, filter, pagination,} = options;
+  const { sort, filter, pagination } = options;
 
   // SQL 参数
   let params: Array<any> = [pagination?.limit, pagination?.offset];
@@ -50,7 +50,7 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.totalLikes}
   FROM post
   ${sqlFragment.leftJoinUser}
-  ${sqlFragment.leftJoinOneFile}
+  ${sqlFragment.innerJoinOneFile}
   ${sqlFragment.leftJoinTag}
   ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
   WHERE ${filter?.sql}
@@ -80,7 +80,6 @@ export const createPost = async (post: PostModel) => {
   return data;
 };
 
-
 /**
  * 更新内容
  */
@@ -93,12 +92,11 @@ export const updatePost = async (postId: number, post: PostModel) => {
   `;
 
   //执行查询
-  const [data] = await connection.promise().query(statement,[post, postId]);
+  const [data] = await connection.promise().query(statement, [post, postId]);
 
   //提供数据
   return data;
 };
-
 
 /**
  * 删除内容
@@ -111,19 +109,16 @@ export const deletePost = async (postId: number) => {
   `;
 
   //执行查询
-  const [data] = await connection.promise().query(statement,postId);
+  const [data] = await connection.promise().query(statement, postId);
 
   //提供数据
   return data;
 };
 
 /**
-* 保存内容标签
-*/
-export const creatPostTag = async (
-  postId: number,
-  tagId?: number
-) => {
+ * 保存内容标签
+ */
+export const creatPostTag = async (postId: number, tagId?: number) => {
   // 准备查询
   const statement = `
     INSERT INTO post_tag (postId, tagId)
@@ -131,19 +126,16 @@ export const creatPostTag = async (
   `;
 
   // 执行查询
-  const [data] = await connection.promise().query(statement,[postId, tagId]);
+  const [data] = await connection.promise().query(statement, [postId, tagId]);
 
   // 提供数据
   return data;
 };
 
 /**
-* 检查内容标签
-*/
-export const postHasTag = async (
-  postId: number,
-  tagId?: number
-) => {
+ * 检查内容标签
+ */
+export const postHasTag = async (postId: number, tagId?: number) => {
   // 准备查询
   const statement = `
     SELECT * FROM post_tag
@@ -151,18 +143,18 @@ export const postHasTag = async (
   `;
 
   // 执行查询
-  const [...data] = await connection.promise().query(statement,[postId, tagId]);
+  const [...data] = await connection
+    .promise()
+    .query(statement, [postId, tagId]);
 
   // 提供数据
   return data[0][0] ? true : false;
 };
 
 /**
-* 删除内容标签
-*/
-export const deletePostTag = async (
-  postId: number, tagId?: number
-) => {
+ * 删除内容标签
+ */
+export const deletePostTag = async (postId: number, tagId?: number) => {
   //准备查询
   const statement = `
     DELETE FROM post_tag
@@ -170,20 +162,18 @@ export const deletePostTag = async (
   `;
 
   // 执行查询
-  const [data] = await connection.promise().query(statement,[postId, tagId]);
+  const [data] = await connection.promise().query(statement, [postId, tagId]);
 
   // 提供数据
   return data;
 };
 
 /**
-* 统计内容数量
-*/
-export const getPostsTotalCount = async (
-  options: GetPostsOptions
-) => {
+ * 统计内容数量
+ */
+export const getPostsTotalCount = async (options: GetPostsOptions) => {
   // 准备数据
-  const {filter} = options;
+  const { filter } = options;
 
   // SQL 参数
   const params = [filter?.param];
@@ -193,7 +183,7 @@ export const getPostsTotalCount = async (
     SELECT
       COUNT(DISTINCT post.id) AS total
     FROM post
-    ${sqlFragment.leftJoinOneFile}
+    ${sqlFragment.innerJoinOneFile}
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinTag}
     ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
@@ -208,8 +198,8 @@ export const getPostsTotalCount = async (
 };
 
 /**
-* 按内容 ID 查找相关内容
-*/
+ * 按内容 ID 查找相关内容
+ */
 export const getPostById = async (postId: number) => {
   // 准备查询
   const statement = `
