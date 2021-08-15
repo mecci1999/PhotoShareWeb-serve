@@ -53,6 +53,12 @@ export const destroyUserLikePost = async (
       parseInt(postId, 10),
     );
 
+    // 触发事件
+    socketIoServer.emit('userLikePostDeleted', {
+      postId: parseInt(postId, 10),
+      userId,
+    });
+
     //做出响应
     response.send(data);
   } catch (error) {
