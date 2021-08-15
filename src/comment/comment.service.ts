@@ -1,14 +1,15 @@
-import { connection } from "../app/database/mysql";
-import { sqlFragment } from "./comment.provider";
-import { CommentModel } from "./comment.model";
-import { GetPostsOptionsFilter, GetPostsOptionsPagination } from "../post/post.service";
+import { connection } from '../app/database/mysql';
+import { sqlFragment } from './comment.provider';
+import { CommentModel } from './comment.model';
+import {
+  GetPostsOptionsFilter,
+  GetPostsOptionsPagination,
+} from '../post/post.service';
 
 /**
-* 创建评论
-*/
-export const createComment = async (
-  comment: CommentModel
-) => {
+ * 创建评论
+ */
+export const createComment = async (comment: CommentModel) => {
   // 准备查询
   const statement = `
     INSERT INTO comment
@@ -23,11 +24,9 @@ export const createComment = async (
 };
 
 /**
-* 检查评论是否为回复评论
-*/
-export const isReplyComment = async (
-  commentId: number
-) => {
+ * 检查评论是否为回复评论
+ */
+export const isReplyComment = async (commentId: number) => {
   // 准备查询
   const statement = `
     SELECT parentId FROM comment 
@@ -42,13 +41,11 @@ export const isReplyComment = async (
 };
 
 /**
-* 更改评论
-*/
-export const updateComment = async (
-  comment: CommentModel
-) => {
+ * 更改评论
+ */
+export const updateComment = async (comment: CommentModel) => {
   // 准备数据
-  const {id, content} = comment;
+  const { id, content } = comment;
 
   // 准备查询
   const statement = `
@@ -65,11 +62,9 @@ export const updateComment = async (
 };
 
 /**
-* 删除评论
-*/
-export const deleteComment = async (
-  commentId: number
-) => {
+ * 删除评论
+ */
+export const deleteComment = async (commentId: number) => {
   // 准备查询
   const statement = `
     DELETE FROM comment
@@ -84,26 +79,25 @@ export const deleteComment = async (
 };
 
 /**
-* 获得评论列表
-*/
+ * 获得评论列表
+ */
 interface GetCommentsOptions {
   filter?: GetPostsOptionsFilter;
   pagination?: GetPostsOptionsPagination;
 }
 
-
-export const getComments = async ( options: GetCommentsOptions) => {
+export const getComments = async (options: GetCommentsOptions) => {
   // 解构选项
-  const {filter, pagination} = options;
-  
+  const { filter, pagination } = options;
+
   // SQL 参数
   let params: Array<any> = [pagination?.limit, pagination?.offset];
 
   // 设置 SQL 参数
-  if (filter?.param){
+  if (filter?.param) {
     params = [filter.param, ...params];
   }
-  
+
   // 准备查询
   const statement = `
     SELECT
@@ -134,11 +128,9 @@ export const getComments = async ( options: GetCommentsOptions) => {
 };
 
 /**
-* 统计评论数量
-*/
-export const getCommentsTotalCount = async (
-  options: GetCommentsOptions  
-) => {
+ * 统计评论数量
+ */
+export const getCommentsTotalCount = async (options: GetCommentsOptions) => {
   // 解构选项
   const { filter } = options;
 
@@ -172,17 +164,15 @@ export const getCommentsTotalCount = async (
 };
 
 /**
-* 评论回复列表
-*/
+ * 评论回复列表
+ */
 interface GetCommentRepliesOptions {
   commentId: number;
 }
 
-export const getCommentReplies = async (
-  options: GetCommentRepliesOptions
-) => {
+export const getCommentReplies = async (options: GetCommentRepliesOptions) => {
   // 解构选项
-  const {commentId} = options;
+  const { commentId } = options;
 
   // 准备查询
   const statement = `
@@ -204,4 +194,45 @@ export const getCommentReplies = async (
 
   // 提供数据
   return data[0][0];
+};
+
+/**
+ * 按 ID 调取评论或回复
+ */
+export interface GetCommentByIdOptions {
+  resourceType?: string;
+}
+
+export const getCommentById = async (
+  commentId: number,
+  options: GetCommentByIdOptions = {},
+) => {
+  // 解构选项
+  const { resourceType = 'comment' } = options;
+
+  // 准备 sql 参数
+  const params: Array<any> = [commentId];
+
+  // 准备查询
+  const statement = `
+    SELECT 
+      comment.id,
+      comment.content,
+      ${sqlFragment.user},
+      ${sqlFragment.post}
+      ${resourceType === 'reply' ? `,${sqlFragment.repliedComment}` : ''}
+      ${resourceType === 'comment' ? `,${sqlFragment.totalReplies}` : ''}
+    FROM
+      comment
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.leftJoinPost}
+    WHERE
+      comment.id = ?
+  `;
+
+  // 执行查询
+  const [...data] = await connection.promise().query(statement, params);
+
+  // 提供数据
+  return data[0][0] as any;
 };
