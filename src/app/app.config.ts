@@ -22,8 +22,8 @@ export const {
  * 密钥和公钥配置
  */
 export let { PRIVATE_KEY, PUBLIC_KEY } = process.env;
-PRIVATE_KEY = Buffer.from(`${PRIVATE_KEY}`,'base64').toString();
-PUBLIC_KEY = Buffer.from(`${PUBLIC_KEY}`,'base64').toString();
+PRIVATE_KEY = Buffer.from(`${PRIVATE_KEY}`, 'base64').toString();
+PUBLIC_KEY = Buffer.from(`${PUBLIC_KEY}`, 'base64').toString();
 
 /**
  * 内容分页
@@ -33,4 +33,12 @@ export const POSTS_PRE_PAGE = parseInt(`${process.env['POSTS_PRE_PAGE']}`, 10);
 /**
  * 评论分页
  */
- export const COMMENTS_PRE_PAGE = parseInt(`${process.env['COMMENTS_PRE_PAGE']}`, 10);
+export const COMMENTS_PRE_PAGE = parseInt(
+  `${process.env['COMMENTS_PRE_PAGE']}`,
+  10,
+);
+
+/**
+ * 跨域资源共享
+ */
+export const ALLOW_ORIGIN = process.env['ALLOW_ORIGIN'];
