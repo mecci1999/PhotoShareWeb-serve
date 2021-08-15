@@ -1,37 +1,49 @@
-import{ Request, Response, NextFunction } from 'express';
-import { 
+import { Request, Response, NextFunction } from 'express';
+import { socketIoServer } from '../app/app.server';
+import {
   createComment,
   deleteComment,
+  getCommentById,
   getCommentReplies,
-  getComments, 
-  getCommentsTotalCount, 
+  getComments,
+  getCommentsTotalCount,
   isReplyComment,
-  updateComment 
+  updateComment,
 } from './comment.service';
 
 /**
-* 发表评论
-*/
+ * 发表评论
+ */
 export const store = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  //准备数据
-  const {id: userId} = request.user;
-  const {content, postId} = request.body;
+  // 准备数据
+  const { id: userId } = request.user;
+  const { content, postId } = request.body;
+  const socketId = request.header('X-Socket-Id');
 
   const comment = {
     content,
     postId,
-    userId
+    userId,
   };
 
   try {
-    //保存评论
+    // 保存评论
     const data = await createComment(comment);
 
-    //做出响应
+    // 调取新创建评论
+    const createdComment = await getCommentById(data.insertId);
+
+    // 触发事件
+    socketIoServer.emit('commentCreated', {
+      comment: createdComment,
+      socketId,
+    });
+
+    // 做出响应
     response.status(201).send(data);
   } catch (error) {
     next(error);
@@ -39,30 +51,30 @@ export const store = async (
 };
 
 /**
-* 回复评论
-*/
+ * 回复评论
+ */
 export const reply = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {commentId} = request.params;
+  const { commentId } = request.params;
   const parentId = parseInt(commentId, 10);
-  const {id: userId} = request.user;
-  const {content, postId} = request.body;
+  const { id: userId } = request.user;
+  const { content, postId } = request.body;
 
   const comment = {
     content,
     postId,
     userId,
-    parentId
+    parentId,
   };
 
   //判断当前回复是否为回复评论
   try {
     const reply = await isReplyComment(parentId);
-    if(reply) return next(new Error('UNABLE_TO_REPLY_THIS_COMMENT'));
+    if (reply) return next(new Error('UNABLE_TO_REPLY_THIS_COMMENT'));
   } catch (error) {
     return next(error);
   }
@@ -79,21 +91,21 @@ export const reply = async (
 };
 
 /**
-* 修改评论
-*/
+ * 修改评论
+ */
 export const update = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //准备数据
-  const {commentId} = request.params;
-  const {content} = request.body;
+  const { commentId } = request.params;
+  const { content } = request.body;
 
   const comment = {
     id: parseInt(commentId, 10),
     content,
-  }
+  };
 
   //修改评论
   try {
@@ -107,15 +119,15 @@ export const update = async (
 };
 
 /**
-* 删除评论
-*/
+ * 删除评论
+ */
 export const destroy = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //准备数据
-  const {commentId} = request.params;
+  const { commentId } = request.params;
 
   //执行删除
   try {
@@ -129,16 +141,16 @@ export const destroy = async (
 };
 
 /**
-* 获取评论列表
-*/
+ * 获取评论列表
+ */
 export const index = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 统计评论数量
   try {
-    const totalCount = await getCommentsTotalCount({filter:request.filter});
+    const totalCount = await getCommentsTotalCount({ filter: request.filter });
 
     // 做出响应
     response.header('X-Total-Count', totalCount);
@@ -148,7 +160,10 @@ export const index = async (
 
   try {
     // 获得评论列表
-    const comment = await getComments({ filter:request.filter, pagination: request.pagination });
+    const comment = await getComments({
+      filter: request.filter,
+      pagination: request.pagination,
+    });
 
     // 做出响应
     response.send(comment);
@@ -158,18 +173,20 @@ export const index = async (
 };
 
 /**
-* 回复评论列表
-*/
+ * 回复评论列表
+ */
 export const indexReplied = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {commentId} = request.params;
+  const { commentId } = request.params;
 
   try {
-    const replies = await getCommentReplies({commentId: parseInt(commentId, 10)});
+    const replies = await getCommentReplies({
+      commentId: parseInt(commentId, 10),
+    });
 
     // 作出响应
     response.send(replies);

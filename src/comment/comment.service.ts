@@ -20,7 +20,7 @@ export const createComment = async (comment: CommentModel) => {
   const [data] = await connection.promise().query(statement, comment);
 
   // 提供数据
-  return data;
+  return data as any;
 };
 
 /**
