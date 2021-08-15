@@ -13,6 +13,7 @@ export const storeUserLikePosr = async (
   // 获得数据
   const { postId } = request.params;
   const { id: userId } = request.user;
+  const socketId = request.header('X-Socket-Id');
 
   try {
     // 保存点赞
@@ -25,6 +26,7 @@ export const storeUserLikePosr = async (
     socketIoServer.emit('userLikePostCreated', {
       postId: parseInt(postId, 10),
       userId,
+      socketId,
     });
 
     // 做出响应
@@ -45,6 +47,7 @@ export const destroyUserLikePost = async (
   //获得数据
   const { postId } = request.params;
   const { id: userId } = request.user;
+  const socketId = request.header('X-Socket-Id');
 
   try {
     //保存点赞
@@ -57,6 +60,7 @@ export const destroyUserLikePost = async (
     socketIoServer.emit('userLikePostDeleted', {
       postId: parseInt(postId, 10),
       userId,
+      socketId,
     });
 
     //做出响应
