@@ -1,12 +1,12 @@
 //导入app
-import app from './app';
 import { APP_PORT } from './app/app.config';
+import httpServer from './app/app.server';
 import { connection } from './app/database/mysql';
 
 /**
  * 服务器的监听
  */
-app.listen(APP_PORT, () => {
+httpServer.listen(APP_PORT, () => {
   console.log('服务器已启动！~');
 });
 
