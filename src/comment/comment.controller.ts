@@ -63,6 +63,7 @@ export const reply = async (
   const parentId = parseInt(commentId, 10);
   const { id: userId } = request.user;
   const { content, postId } = request.body;
+  const socketId = request.header('X-Socket-Id');
 
   const comment = {
     content,
@@ -83,7 +84,18 @@ export const reply = async (
   try {
     const data = await createComment(comment);
 
-    //做出响应
+    // 回复数据
+    const reply = await getCommentById(data.insertId, {
+      resourceType: 'reply',
+    });
+
+    // 触发事件
+    socketIoServer.emit('commentReplyCreated', {
+      reply,
+      socketId,
+    });
+
+    // 做出响应
     response.status(201).send(data);
   } catch (error) {
     next(error);
