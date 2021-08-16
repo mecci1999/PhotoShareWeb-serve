@@ -15,6 +15,7 @@ import {
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
 import { deletePostFiles, getPostFiles } from '../file/file.service';
+import { PostModel } from './post.model';
 
 /**
  * 内容列表
@@ -64,12 +65,19 @@ export const store = async (
   next: NextFunction,
 ) => {
   //准备好需要存储的数据
-  const { title, content } = request.body;
+  const { title, content, status = PostStatus.draft } = request.body;
   const { id: userId } = request.user;
+
+  const post: PostModel = {
+    title,
+    content,
+    userId,
+    status,
+  };
 
   //创建内容
   try {
-    const data = await createPost({ title, content, userId });
+    const data = await createPost(post);
     response.status(201).send(data);
   } catch (error) {
     next(error);
@@ -87,7 +95,7 @@ export const update = async (
   //获取更新内容的ID
   const { postId } = request.params;
   //准备更新数据
-  const post = _.pick(request.body, ['title', 'content']);
+  const post = _.pick(request.body, ['title', 'content', 'status']);
   //更新内容
   try {
     const data = await updatePost(parseInt(postId, 10), post);
