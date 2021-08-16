@@ -39,7 +39,7 @@ export const defaultErrorHandler = (
       message = '请输入密码 ~~';
       break;
     case 'USER_ALREADY_EXIST':
-      statusCode = 409;//有冲突
+      statusCode = 409; //有冲突
       message = '用户名已存在，请修改 ~~';
       break;
     case 'USER_DOES_NOT_EXIST':
@@ -89,6 +89,10 @@ export const defaultErrorHandler = (
     case 'PASSWORD_IS_THE_SAME':
       statusCode = 400;
       message = '修改的密码与原密码一致，请更改 ~~';
+      break;
+    case 'BAD_REQUEST':
+      statusCode = 400;
+      message = '无法处理您的请求';
       break;
     default:
       statusCode = 500;
