@@ -10,6 +10,7 @@ import {
   deletePostTag,
   getPostsTotalCount,
   getPostById,
+  PostStatus,
 } from './post.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
@@ -23,9 +24,16 @@ export const index = async (
   response: Response,
   next: NextFunction,
 ) => {
+  // 解构查询符
+  const { status = '' } = request.query;
+  const postStatus = (`${status}` as unknown) as PostStatus;
+
   //获得内容数量
   try {
-    const totalCount = await getPostsTotalCount({ filter: request.filter });
+    const totalCount = await getPostsTotalCount({
+      filter: request.filter,
+      postStatus,
+    });
 
     //响应头部数据
     response.header('X-Total-Count', totalCount);
@@ -39,6 +47,7 @@ export const index = async (
       filter: request.filter,
       pagination: request.pagination,
       currentUser: request.user,
+      postStatus,
     });
     response.send(posts);
   } catch (error) {
