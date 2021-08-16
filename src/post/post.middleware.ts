@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { off } from 'process';
+import { PostStatus } from './post.service';
 
 /**
  * 排序方式
@@ -128,4 +129,43 @@ export const validatePostStatus = async (
   } else {
     next();
   }
+};
+
+/**
+ * 模式切换器
+ */
+export const modeSwitcher = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 解构查询符
+  const { manage, admin } = request.query;
+
+  // 管理模式
+  const isManageMode = manage === 'true';
+
+  // 管理员模式
+  const isAdminMode = isManageMode && admin === 'true' && request.user.id === 1;
+
+  if (isManageMode) {
+    if (isAdminMode) {
+      request.filter = {
+        name: 'adminManagePosts',
+        sql: 'post.id IS NOT NULL',
+        param: '',
+      };
+    } else {
+      request.filter = {
+        name: 'userManagePosts',
+        sql: 'user.id = ?',
+        param: `${request.user.id}`,
+      };
+    }
+  } else {
+    // 普通模式
+    request.query.status = PostStatus.published;
+  }
+
+  next();
 };

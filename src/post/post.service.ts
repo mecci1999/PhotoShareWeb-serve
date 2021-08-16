@@ -15,9 +15,9 @@ export interface GetPostsOptionsPagination {
 }
 
 export enum PostStatus {
-  published,
-  draft,
-  archived,
+  published = 'published',
+  draft = 'draft',
+  archived = 'archived',
 }
 
 export interface GetPostsOptions {
