@@ -1,22 +1,22 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import * as fileService from './file.service';
 
 /**
-* 上传文件
-*/
+ * 上传文件
+ */
 export const store = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 当前用户
-  const {id: userId} = request.user;
+  const { id: userId } = request.user;
 
   // 所属内容
-  const {post: postId} = request.query;
+  const { post: postId } = request.query;
 
   // 文件信息
   const fileInfo = _.pick(request.file, [
@@ -33,30 +33,36 @@ export const store = async (
       ...fileInfo,
       userId,
       postId,
-      ...request.fileMetaData
+      ...request.fileMetaData,
     });
 
     // 做出响应
     response.status(201).send(data);
   } catch (error) {
-      next(error); 
+    next(error);
   }
 };
 
 /**
-* 文件服务
-*/
+ * 文件服务
+ */
 export const serve = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 获取文件ID，从地址参数里得到
   const { fileId } = request.params;
 
+  // 当前用户
+  const { user: currentUser } = request;
+
   try {
     //查找文件
     const file = await fileService.findFileById(parseInt(fileId, 10));
+
+    // 检查权限
+    await fileService.fillAccessControl({ file, currentUser });
 
     //要提供的图像尺寸
     const { size } = request.query;
@@ -71,11 +77,14 @@ export const serve = async (
       //可用的图像尺寸
       const imageSize = ['large', 'middle', 'thumbnail'];
 
-      if (!imageSize.some(item => item == size)) throw new Error('FILE_NOT_FOUND');
+      if (!imageSize.some(item => item == size))
+        throw new Error('FILE_NOT_FOUND');
     }
 
     //文件是否存在
-    const fileExist = fs.existsSync(path.join(root, resize, `${filename}-${size}`));
+    const fileExist = fs.existsSync(
+      path.join(root, resize, `${filename}-${size}`),
+    );
     if (fileExist) {
       filename = `${filename}-${size}`;
       root = path.join(root, resize);
@@ -94,19 +103,25 @@ export const serve = async (
 };
 
 /**
-* 文件信息
-*/
+ * 文件信息
+ */
 export const metadata = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //准备文件ID
-  const {fileId} = request.params;
+  const { fileId } = request.params;
+
+  // 当前用户
+  const { user: currentUser } = request;
 
   try {
     //查询文件数据
-    const file = await fileService.findFileById(parseInt(fileId,10));
+    const file = await fileService.findFileById(parseInt(fileId, 10));
+
+    // 检查权限
+    await fileService.fillAccessControl({ file, currentUser });
 
     //准备响应数据
     const data = _.pick(file, ['id', 'size', 'width', 'height', 'metadata']);

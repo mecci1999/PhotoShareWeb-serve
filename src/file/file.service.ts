@@ -3,6 +3,8 @@ import fs from 'fs';
 import Jimp from 'jimp';
 import { connection } from '../app/database/mysql';
 import { FileModel } from './file.model';
+import { TokenPayload } from '../auth/auth.interface';
+import { getPostById, PostStatus } from '../post/post.service';
 
 /**
  * 存储文件信息
@@ -126,4 +128,29 @@ export const deletePostFiles = async (files: Array<FileModel>) => {
       });
     });
   });
+};
+
+/**
+ * 检查文件权限
+ */
+interface FileAccessControlOptions {
+  file: FileModel;
+  currentUser: TokenPayload;
+}
+
+export const fillAccessControl = async (options: FileAccessControlOptions) => {
+  // 解构数据
+  const { file, currentUser } = options;
+
+  // 准备数据
+  const ownFile = file.userId === currentUser.id;
+  const isAdmin = currentUser.id === 1;
+  const parentPost = await getPostById(file.postId, { currentUser });
+  const isPublished = parentPost.status === PostStatus.published;
+  const canAccess = isAdmin || ownFile || isPublished;
+
+  // 进行判断
+  if (!canAccess) {
+    throw new Error('FORBIDDEN');
+  }
 };
