@@ -1,4 +1,5 @@
 import { connection } from '../app/database/mysql';
+import { AuditLogStatus } from '../audit-log/audit-log.model';
 import { TokenPayload } from '../auth/auth.interface';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
@@ -26,6 +27,7 @@ export interface GetPostsOptions {
   pagination?: GetPostsOptionsPagination;
   currentUser?: TokenPayload;
   postStatus?: PostStatus;
+  auditLogStatus?: AuditLogStatus;
 }
 
 /**
@@ -37,7 +39,14 @@ export const getPosts = async (options: GetPostsOptions) => {
    */
 
   //获取数据
-  const { sort, filter, pagination, currentUser, postStatus: status } = options;
+  const {
+    sort,
+    filter,
+    pagination,
+    currentUser,
+    postStatus: status,
+    auditLogStatus: auditStatus,
+  } = options;
 
   // SQL 参数
   let params: Array<any> = [pagination?.limit, pagination?.offset];
@@ -56,6 +65,11 @@ export const getPosts = async (options: GetPostsOptions) => {
   const whereStatus = status
     ? `post.status = '${status}'`
     : 'post.status IS NOT NULL';
+
+  // 审核状态
+  const whereAuditStatus = auditStatus
+    ? `AND audit.status = '${auditStatus}'`
+    : '';
 
   // 定义用户是否点赞过内容的sql语句
   const sqlUserLikedPost = {
@@ -80,14 +94,16 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.totalComments},
     ${sqlFragment.file},
     ${sqlFragment.tags},
-    ${sqlFragment.totalLikes}
+    ${sqlFragment.totalLikes},
+    ${sqlFragment.audit}
     ${userName == 'anonymous' ? '' : `,${sqlUserLikedPost.currentLiked}`}
     FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.innerJoinOneFile}
     ${sqlFragment.leftJoinTag}
+    ${sqlFragment.leftJoinOneAuditLog}
     ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter?.sql} AND ${whereStatus}
+    WHERE ${filter?.sql} AND ${whereStatus} ${whereAuditStatus}
     GROUP BY post.id
     ORDER BY ${sort}
     LIMIT ?
@@ -95,6 +111,7 @@ export const getPosts = async (options: GetPostsOptions) => {
     `;
 
   const [data] = await connection.promise().query(statement, params);
+
   return data;
 };
 
@@ -208,7 +225,7 @@ export const deletePostTag = async (postId: number, tagId?: number) => {
  */
 export const getPostsTotalCount = async (options: GetPostsOptions) => {
   // 准备数据
-  const { filter, postStatus: status } = options;
+  const { filter, postStatus: status, auditLogStatus: auditStatus } = options;
 
   // SQL 参数
   const params = [filter?.param];
@@ -218,6 +235,11 @@ export const getPostsTotalCount = async (options: GetPostsOptions) => {
     ? `post.status = '${status}'`
     : `post.status IS NOT NULL`;
 
+  // 审核状态
+  const whereAuditStatus = auditStatus
+    ? `AND audit.status = '${auditStatus}'`
+    : '';
+
   // 准备查询
   const statement = `
     SELECT
@@ -226,8 +248,9 @@ export const getPostsTotalCount = async (options: GetPostsOptions) => {
     ${sqlFragment.innerJoinFile}
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinTag}
+    ${sqlFragment.leftJoinOneAuditLog}
     ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter?.sql} AND ${whereStatus}
+    WHERE ${filter?.sql} AND ${whereStatus} ${whereAuditStatus}
   `;
 
   //执行查询

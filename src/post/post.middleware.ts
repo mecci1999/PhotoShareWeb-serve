@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { off } from 'process';
+import { AuditLogStatus } from '../audit-log/audit-log.model';
 import { PostStatus } from './post.service';
 
 /**
@@ -168,6 +169,7 @@ export const modeSwitcher = async (
   } else {
     // 普通模式
     request.query.status = PostStatus.published;
+    request.query.auditStatus = AuditLogStatus.approved;
   }
 
   next();

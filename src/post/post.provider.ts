@@ -103,14 +103,13 @@ export const sqlFragment = {
         audit_log
       WHERE
         audit_log.resourceId = post.id
-      ORDER BY
-        audit_log.id DESC
+      ORDER BY audit_log.id DESC
       LIMIT 1
     ) AS audit ON post.id = audit.resourceId
   `,
   audit: `
     CAST(
-      IF (
+      IF(
         COUNT(audit.id),
         GROUP_CONCAT(
           DISTINCT JSON_OBJECT(

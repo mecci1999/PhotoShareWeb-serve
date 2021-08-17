@@ -16,6 +16,7 @@ import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
 import { deletePostFiles, getPostFiles } from '../file/file.service';
 import { PostModel } from './post.model';
+import { AuditLogStatus } from '../audit-log/audit-log.model';
 
 /**
  * 内容列表
@@ -26,14 +27,16 @@ export const index = async (
   next: NextFunction,
 ) => {
   // 解构查询符
-  const { status = '' } = request.query;
+  const { status = '', auditStatus } = request.query;
   const postStatus = (`${status}` as unknown) as PostStatus;
+  const auditLogStatus = (`${auditStatus}` as unknown) as AuditLogStatus;
 
   //获得内容数量
   try {
     const totalCount = await getPostsTotalCount({
       filter: request.filter,
       postStatus,
+      auditLogStatus,
     });
 
     //响应头部数据
@@ -49,6 +52,7 @@ export const index = async (
       pagination: request.pagination,
       currentUser: request.user,
       postStatus,
+      auditLogStatus,
     });
     response.send(posts);
   } catch (error) {
