@@ -10,7 +10,7 @@ import avatarRouter from '../avatar/avatar.router';
 import likeRouter from '../like/like.router';
 import appRouter from './app.router';
 import searchRouter from '../search/search.router';
-import auditLogRouter from '../audit-log/audit.router';
+import auditLogRouter from '../audit-log/audit-log.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
 import { ALLOW_ORIGIN } from './app.config';
