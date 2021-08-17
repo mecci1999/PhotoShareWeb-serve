@@ -18,3 +18,38 @@ export const createAuditLog = async (auditLog: AuditLogModel) => {
   // 提供数据
   return data;
 };
+
+/**
+ * 按资源获取审核日志
+ */
+export interface getAuditLogByResourceOptions {
+  resourceType?: string;
+  resourceId?: number;
+}
+
+export const getAuditLogByResource = async (
+  options: getAuditLogByResourceOptions,
+) => {
+  // 解构数据
+  const { resourceType, resourceId } = options;
+
+  // 准备查询
+  const statement = `
+    SELECT
+      *
+    FROM
+      audit_log
+    WHERE
+      resourceType = ? AND resourceId = ?
+    ORDER BY
+      audit_log.id DESC
+  `;
+
+  // 执行查询
+  const [data] = await connection
+    .promise()
+    .query(statement, [resourceType, resourceId]);
+
+  // 提供数据
+  return data as Array<AuditLogModel>;
+};
