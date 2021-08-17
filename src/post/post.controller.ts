@@ -17,6 +17,7 @@ import { createTag, getTagByName } from '../tag/tag.service';
 import { deletePostFiles, getPostFiles } from '../file/file.service';
 import { PostModel } from './post.model';
 import { AuditLogStatus } from '../audit-log/audit-log.model';
+import { getAuditLogByResource } from '../audit-log/audit-log.service';
 
 /**
  * 内容列表
@@ -228,12 +229,18 @@ export const show = async (
       currentUser,
     });
 
+    // 审查日志
+    const [auditLog] = await getAuditLogByResource({
+      resourceId: parseInt(postId, 10),
+      resourceType: 'post',
+    });
+
     // 检查权限
     const ownPost = post.user.id === currentUser.id;
     const isAdmin = currentUser.id === 1;
     const isPublished = post.status === PostStatus.published;
-
-    const canAccess = isAdmin || ownPost || isPublished;
+    const isApproved = auditLog && auditLog.status === AuditLogStatus.approved;
+    const canAccess = isAdmin || ownPost || (isPublished && isApproved);
 
     // 判断
     if (!canAccess) {

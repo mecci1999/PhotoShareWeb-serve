@@ -301,12 +301,14 @@ export const getPostById = async (
       ${sqlFragment.file},
       ${sqlFragment.tags},
       ${sqlFragment.totalComments},
-      ${sqlFragment.totalLikes}
+      ${sqlFragment.totalLikes},
+      ${sqlFragment.audit}
       ${userName == 'anonymous' ? '' : `,${sqlUserLikedPost.currentLiked}`}
     FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinOneFile}
     ${sqlFragment.leftJoinTag}
+    ${sqlFragment.leftJoinOneAuditLog}
     WHERE post.id = ?
   `;
 
