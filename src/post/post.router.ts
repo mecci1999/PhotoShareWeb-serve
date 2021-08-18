@@ -80,6 +80,12 @@ router.post(
   '/posts/:postId/tag',
   authGuard,
   accessControl({ prossession: true }),
+  accessLog({
+    action: 'createPostTag',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+    payloadParam: 'body.name',
+  }),
   postController.storePostTag,
 );
 
@@ -90,6 +96,12 @@ router.delete(
   '/posts/:postId/tag',
   authGuard,
   accessControl({ prossession: true }),
+  accessLog({
+    action: 'deletePostTag',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+    payloadParam: 'body.name',
+  }),
   postController.destroyPostTag,
 );
 
