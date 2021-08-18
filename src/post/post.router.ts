@@ -51,7 +51,7 @@ router.patch(
   accessControl({ prossession: true }),
   validatePostStatus,
   accessLog({
-    action: 'updatePosts',
+    action: 'updatePost',
     resourceType: 'post',
     resourceParamName: 'postId',
   }),
@@ -65,6 +65,11 @@ router.delete(
   '/posts/:postId',
   authGuard,
   accessControl({ prossession: true }),
+  accessLog({
+    action: 'deletePost',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+  }),
   postController.destory,
 );
 
