@@ -30,7 +30,17 @@ router.get(
 /**
  * 创建内容
  */
-router.post('/posts', authGuard, validatePostStatus, postController.store);
+router.post(
+  '/posts',
+  authGuard,
+  validatePostStatus,
+  accessLog({
+    action: 'createPost',
+    resourceType: 'post',
+    payloadParam: 'body.title',
+  }),
+  postController.store,
+);
 
 /**
  * 更新内容
