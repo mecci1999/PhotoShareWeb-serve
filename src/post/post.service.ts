@@ -6,8 +6,8 @@ import { sqlFragment } from './post.provider';
 
 export interface GetPostsOptionsFilter {
   name: string;
-  sql?: string;
-  param?: string;
+  sql?: string | null;
+  param?: string | null;
 }
 
 export interface GetPostsOptionsPagination {
