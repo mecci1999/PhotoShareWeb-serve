@@ -4,16 +4,16 @@ export interface AccessLogModel {
   userName?: string;
   action?: string;
   resourceType?: string;
-  resourceId?: number;
+  resourceId?: number | null;
   payload?: string;
   ip?: string;
   origin?: string | string[];
   referer?: string;
   agent?: string;
-  language?: string;
+  language?: string | string[];
   originalUrl?: string;
   method?: string;
-  query?: Object;
-  params?: Object;
+  query?: Object | null;
+  params?: Object | null;
   created?: number;
 }
