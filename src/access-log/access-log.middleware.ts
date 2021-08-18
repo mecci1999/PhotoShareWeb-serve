@@ -8,7 +8,7 @@ import { createAccessLog } from './access-log.service';
 interface AccessLogOptions {
   action: string;
   resourceType?: string;
-  resourceParamName?: number;
+  resourceParamName?: string;
   payloadParam?: string;
 }
 

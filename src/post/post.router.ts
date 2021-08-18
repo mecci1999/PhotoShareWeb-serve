@@ -50,6 +50,11 @@ router.patch(
   authGuard,
   accessControl({ prossession: true }),
   validatePostStatus,
+  accessLog({
+    action: 'updatePosts',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+  }),
   postController.update,
 );
 
