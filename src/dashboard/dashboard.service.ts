@@ -52,3 +52,84 @@ export const getAccessCounts = async (options: GetAccessCountsOptions) => {
     return accessCount;
   });
 };
+
+/**
+ * 按动作分时段访问次数
+ */
+interface GetAccessCountByAcitonResult {
+  action: string;
+  datetime: string;
+  value: number;
+}
+
+interface AccessCount {
+  title: string;
+  action: string;
+  dateset: [Array<string>, Array<number>];
+}
+
+interface GetAccessCountByActionOptions {
+  action: string;
+  filter: {
+    name: string;
+    sql?: string;
+    param?: string;
+  };
+}
+
+export const getAccessCountByAction = async (
+  options: GetAccessCountByActionOptions,
+) => {
+  // 解构选项
+  const {
+    action,
+    filter: { sql: whereDateTimeRange, param: dateTimeFormat },
+  } = options;
+
+  // 查询条件
+  const andWhereAction = `AND access_log.action = ?`;
+
+  // SQL 参数
+  const params = [action];
+
+  // 准备查询
+  const statement = `
+    SELECT
+      access_log.action,
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}') AS datetime,
+      COUNT(access_log.id) AS value
+    FROM
+      access_log
+    WHERE
+      ${whereDateTimeRange} ${andWhereAction}
+    GROUP BY
+      access_log.action,
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}')
+    ORDER BY
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}') DESC
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, params);
+
+  const results = data as Array<GetAccessCountByAcitonResult>;
+
+  // 数据集合
+  const dateset = results.reduce(
+    (accumulator, result) => {
+      const [datetimeArray, valueArray] = accumulator;
+      datetimeArray.push(result.datetime);
+      valueArray.push(result.value);
+      return accumulator;
+    },
+    [[], []],
+  );
+
+  //动作标题
+  const title = allowedAccessCounts.find(
+    accessCount => accessCount.action === action,
+  ).title;
+
+  // 提供数据
+  return { title, action, dateset } as AccessCount;
+};
