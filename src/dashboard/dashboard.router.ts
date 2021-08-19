@@ -1,6 +1,6 @@
 import express from 'express';
 import * as dashBoardController from './dashboard.controller';
-import { accessCountFilter } from './dashboard.middleware';
+import { accessCountFilter, accessCountsGuard } from './dashboard.middleware';
 
 /**
  * 定义路由
@@ -14,6 +14,16 @@ router.get(
   '/dashboard/access-counts',
   accessCountFilter,
   dashBoardController.accessCountIndex,
+);
+
+/**
+ * 按动作分时段的访问次数
+ */
+router.get(
+  '/dashboard/access-counts/:action',
+  accessCountsGuard,
+  accessCountFilter,
+  dashBoardController.accessCountShow,
 );
 
 /**
