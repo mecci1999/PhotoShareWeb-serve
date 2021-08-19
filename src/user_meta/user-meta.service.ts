@@ -1,5 +1,5 @@
 import { connection } from '../app/database/mysql';
-import { UserMetaModel } from './user-mate.model';
+import { UserMetaModel, UserMetaType } from './user-mate.model';
 
 /**
  * 创建用户 Meta
@@ -41,3 +41,44 @@ export const updateUserMeta = async (
   // 提供数据
   return data as any;
 };
+
+/**
+ * 定义按 Info 字段属性获取用户 Meta
+ */
+export const getUserMetaByInfoProp = (type: string, infoPropName: string) => {
+  return async (value: string | number) => {
+    // 准备查询
+    const statement = `
+      SELECT
+        *
+      FROM
+        user_meta
+      WHERE
+        user_meta.type = ?
+        AND JSON_EXTRACT(user_meta.info, "$.${infoPropName}") = ?
+      ORDER BY
+        user_meta.id
+      LIMIT
+        1
+    `;
+
+    // SQL 参数
+    const params = [type, value];
+
+    // 执行查询
+    const [data] = await connection.promise().query(statement, params);
+
+    // 提供数据
+    return data[0] ? (data[0] as UserMetaModel) : null;
+  };
+};
+
+export const getUserMetaByWeixinOpenId = getUserMetaByInfoProp(
+  UserMetaType.weixinUserInfo,
+  'openId',
+);
+
+export const getUserMetaByWeixinUnionId = getUserMetaByInfoProp(
+  UserMetaType.weixinUserInfo,
+  'unionId',
+);
