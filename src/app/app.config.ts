@@ -42,3 +42,12 @@ export const COMMENTS_PRE_PAGE = parseInt(
  * 跨域资源共享
  */
 export const ALLOW_ORIGIN = process.env['ALLOW_ORIGIN'];
+
+/**
+ * 微信登录: 网站应用
+ */
+export const {
+  WEIXIN_API_BASE_URL,
+  WEIXIN_WEBSITE_APP_ID,
+  WEIXIN_WEBSITE_APP_SECRET,
+} = process.env;
