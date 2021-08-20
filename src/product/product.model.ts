@@ -3,6 +3,12 @@ export enum productType {
   subscription = 'subscription',
 }
 
+export enum ProductStatus {
+  published = 'published',
+  draft = 'draft',
+  archived = 'archived',
+}
+
 export interface productModel {
   id?: number;
   userId?: number;
@@ -12,6 +18,7 @@ export interface productModel {
   price?: number;
   salePrice?: number;
   meta?: any;
+  status?: ProductStatus;
   created?: Date;
   updated?: Date;
 }
