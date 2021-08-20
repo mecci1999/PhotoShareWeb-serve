@@ -13,6 +13,7 @@ import searchRouter from '../search/search.router';
 import auditLogRouter from '../audit-log/audit-log.router';
 import dashBoardRouter from '../dashboard/dashboard.router';
 import productRouter from '../product/product.router';
+import paymentRouter from '../payment/payment.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
 import { ALLOW_ORIGIN } from './app.config';
@@ -59,6 +60,7 @@ app.use(
   auditLogRouter,
   dashBoardRouter,
   productRouter,
+  paymentRouter,
 );
 
 /**
