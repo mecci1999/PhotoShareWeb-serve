@@ -12,6 +12,11 @@ const router = express.Router();
 router.get('/products/license', productController.showLicenseProduct);
 
 /**
+ * 订阅
+ */
+router.get('/products/subscription', productController.showSubscriptionProduct);
+
+/**
  * 默认导出
  */
 export default router;

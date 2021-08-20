@@ -18,3 +18,43 @@ export const showLicenseProduct = async (
     next(error);
   }
 };
+
+/**
+ * 订阅产品
+ */
+export const showSubscriptionProduct = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = [];
+
+    // 标准订阅
+    const standardSubscriptionProduct = await getProductByType('subscription', {
+      meta: {
+        subscriptionType: 'standard',
+      },
+    });
+
+    if (standardSubscriptionProduct) {
+      data.push(standardSubscriptionProduct);
+    }
+
+    // 专业订阅
+    const proSubscriptionProduct = await getProductByType('subscription', {
+      meta: {
+        subscriptionType: 'pro',
+      },
+    });
+
+    if (proSubscriptionProduct) {
+      data.push(proSubscriptionProduct);
+    }
+
+    // 作出响应
+    response.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
