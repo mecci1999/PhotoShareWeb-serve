@@ -17,3 +17,24 @@ export const createOrder = async (order: OrderModel) => {
   // 提供数据
   return data as any;
 };
+
+/**
+ * 按订单 ID 获取订单
+ */
+export const getOrderById = async (orderId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      *
+    FROM
+      \`order\`
+    WHERE
+      order.id = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, orderId);
+
+  // 提供数据
+  return data[0] as OrderModel;
+};
