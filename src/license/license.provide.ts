@@ -25,7 +25,7 @@ export const licenseSqlFragment = {
   `,
 
   leftJoinOrder: `
-    LEFT JOIN order
+    LEFT JOIN \`order\`
      ON license.orderId = order.id
   `,
 

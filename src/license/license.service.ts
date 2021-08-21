@@ -103,14 +103,14 @@ export const getUserValidLicense = async (
  * 调取可查询列表
  */
 export interface GetLicensesOptions {
-  filter?: { user?: number };
+  filters?: { user?: number };
   pagination?: { limit: number; offset: number };
 }
 
 export const getLicenses = async (options: GetLicensesOptions) => {
   // 解构数据
   const {
-    filter: { user },
+    filters: { user },
     pagination: { limit, offset },
   } = options;
 
@@ -134,7 +134,7 @@ export const getLicenses = async (options: GetLicensesOptions) => {
     ${licenseSqlFragment.leftJoinResourceUser}
     ${postSqlFragment.leftJoinOneFile}
     WHERE
-      lisence.status = 'valid'
+      license.status = 'valid'
       AND license.userId = ?
     GROUP BY
       license.id
@@ -157,7 +157,7 @@ export const getLicenses = async (options: GetLicensesOptions) => {
 export const getLicensesTotalCount = async (options: GetLicensesOptions) => {
   // 解构数据
   const {
-    filter: { user },
+    filters: { user },
   } = options;
 
   // SQL 参数
