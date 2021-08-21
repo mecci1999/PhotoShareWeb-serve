@@ -40,3 +40,24 @@ export const updateLicense = async (
   // 提供数据
   return data as any;
 };
+
+/**
+ * 按订单 ID 调取许可方法
+ */
+export const getLicenseByOrderId = async (orderId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      *
+    FROM
+      license
+    WHERE
+      license.orderId = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, orderId);
+
+  // 提供数据
+  return data[0] as LicenseModel;
+};
