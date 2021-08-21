@@ -150,3 +150,33 @@ export const getLicenses = async (options: GetLicensesOptions) => {
   // 提供数据
   return data as any;
 };
+
+/**
+ * 统计许可
+ */
+export const getLicensesTotalCount = async (options: GetLicensesOptions) => {
+  // 解构数据
+  const {
+    filter: { user },
+  } = options;
+
+  // SQL 参数
+  const params = [user];
+
+  // 准备查询
+  const statement = `
+    SELECT
+      COUNT(license.id) AS total
+    FROM
+      license
+    WHERE
+      license.status = 'valid'
+      AND license.userId = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, params);
+
+  // 提供数据
+  return data[0].total;
+};
