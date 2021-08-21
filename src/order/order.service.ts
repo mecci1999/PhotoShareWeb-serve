@@ -45,10 +45,9 @@ export const getOrderById = async (orderId: number) => {
 export const updateOrder = async (orderId: number, order: OrderModel) => {
   // 准备查询
   const statement = `
-    UPDATE
-      \`order\`
+    UPDATE \`order\`
     SET ?
-    WHERE order.id = ?
+    WHERE id = ?
   `;
 
   // 执行查询

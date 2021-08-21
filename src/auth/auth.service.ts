@@ -17,8 +17,8 @@ export const signToken = (options: SignTokenOptions) => {
   const { payload } = options;
 
   //签发 JWT
-  const token = jwt.sign(payload, `${PRIVATE_KEY}`, { algorithm: 'RS256'}); 
-  
+  const token = jwt.sign(payload, `${PRIVATE_KEY}`, { algorithm: 'RS256' });
+
   //提供数据
   return token;
 };
@@ -34,18 +34,20 @@ interface ProssessOptions {
 
 export const prossess = async (options: ProssessOptions) => {
   // 准备选项
-  const { resourceId, resourceType, userId} = options;
-  
+  const { resourceId, resourceType, userId } = options;
+
   // 准备查询
-  const statement =  `
+  const statement = `
     SELECT COUNT(${resourceType}.id) as count
-    FROM ${resourceType}
+    FROM \`${resourceType}\`
     WHERE ${resourceType}.id = ? AND userId = ?
   `;
 
   // 执行查询
-  const [...data] = await connection.promise().query(statement, [resourceId, userId]);
-  
+  const [...data] = await connection
+    .promise()
+    .query(statement, [resourceId, userId]);
+
   // 提供数据
   return data[0][0].count ? true : false;
 };

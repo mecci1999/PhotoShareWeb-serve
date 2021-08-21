@@ -1,8 +1,8 @@
 import express from 'express';
 import { accessLog } from '../access-log/access-log.middleware';
-import { authGuard } from '../auth/auth.middleware';
+import { accessControl, authGuard } from '../auth/auth.middleware';
 import * as orderController from './order.controller';
-import { orderGuard } from './order.middleware';
+import { orderGuard, updateOrderGuard } from './order.middleware';
 
 /**
  * 定义路由
@@ -18,6 +18,22 @@ router.post(
   orderGuard,
   accessLog({ action: 'createOrder', resourceType: 'order' }),
   orderController.store,
+);
+
+/**
+ * 更新订单
+ */
+router.patch(
+  '/orders/:orderId',
+  authGuard,
+  accessControl({ prossession: true }),
+  updateOrderGuard,
+  accessLog({
+    action: 'updateOrder',
+    resourceType: 'order',
+    resourceParamName: 'orderId',
+  }),
+  orderController.update,
 );
 
 /**
