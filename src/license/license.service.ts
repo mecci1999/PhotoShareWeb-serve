@@ -1,3 +1,4 @@
+import { ResourceType } from '../app/app.enum';
 import { connection } from '../app/database/mysql';
 import { LicenseModel } from './license.model';
 
@@ -57,6 +58,40 @@ export const getLicenseByOrderId = async (orderId: number) => {
 
   // 执行查询
   const [data] = await connection.promise().query(statement, orderId);
+
+  // 提供数据
+  return data[0] as LicenseModel;
+};
+
+/**
+ * 有效许可证
+ */
+export const getUserValidLicense = async (
+  userId: number,
+  resourceType: ResourceType | string,
+  resourceId: number,
+) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      *
+    FROM
+      license
+    WHERE
+      license.status = 'valid'
+      AND license.userId = ?
+      AND license.resourceType = ?
+      AND license.resourceId = ?
+    ORDER BY
+      license.id DESC
+    LIMIT
+      1
+  `;
+
+  // 执行查询
+  const [data] = await connection
+    .promise()
+    .query(statement, [userId, resourceType, resourceId]);
 
   // 提供数据
   return data[0] as LicenseModel;
