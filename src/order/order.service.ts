@@ -38,3 +38,22 @@ export const getOrderById = async (orderId: number) => {
   // 提供数据
   return data[0] as OrderModel;
 };
+
+/**
+ * 更新订单
+ */
+export const updateOrder = async (orderId: number, order: OrderModel) => {
+  // 准备查询
+  const statement = `
+    UPDATE
+      \`order\`
+    SET ?
+    WHERE order.id = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, [order, orderId]);
+
+  // 提供数据
+  return data as any;
+};
