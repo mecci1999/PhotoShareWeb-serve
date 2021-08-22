@@ -1,5 +1,7 @@
 import { connection } from '../app/database/mysql';
-import { SubscriptionModel } from './subscription.model';
+import { OrderModel } from '../order/order.model';
+import { productModel } from '../product/product.model';
+import { SubscriptionModel, SubscriptionStatus } from './subscription.model';
 
 /**
  * 创建订阅
@@ -61,4 +63,32 @@ export const getUserValidSubscription = async (userId: number) => {
 
   // 提供数据
   return data[0] as SubscriptionModel;
+};
+
+/**
+ * 处理订阅
+ */
+export interface ProcessSubscriptionOptions {
+  userId: number;
+  order: OrderModel;
+  product: productModel;
+}
+
+export const processSubscription = async (
+  options: ProcessSubscriptionOptions,
+) => {
+  // 解构数据
+  const { userId, order, product } = options;
+
+  // 调取用户的有效订阅
+  const subscription = await getUserValidSubscription(userId);
+
+  // 全新订阅
+  if (!subscription) {
+    await createSubscription({
+      userId,
+      type: product.meta.subscriptionType,
+      status: SubscriptionStatus.pending,
+    });
+  }
 };

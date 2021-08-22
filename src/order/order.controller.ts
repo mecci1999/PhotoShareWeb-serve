@@ -4,6 +4,7 @@ import { createLicense } from '../license/license.service';
 import { OrderLogAciton } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
 import { productType } from '../product/product.model';
+import { processSubscription } from '../subscription/subscription.service';
 import { createOrder, updateOrder } from './order.service';
 
 /**
@@ -45,6 +46,10 @@ export const store = async (
         resourceType,
         resourceId,
       });
+    }
+
+    if (product.type === productType.subscription) {
+      await processSubscription({ userId, order, product });
     }
 
     // 作出响应
