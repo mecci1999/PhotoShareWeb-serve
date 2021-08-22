@@ -40,3 +40,25 @@ export const updateSubscription = async (
   // 提供数据
   return data as any;
 };
+
+/**
+ * 调取用户的有效信息
+ */
+export const getUserValidSubscription = async (userId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      *
+    FROM
+      subscription
+    WHERE
+      subscription.status = 'valid'
+      AND subscription.userId = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, userId);
+
+  // 提供数据
+  return data[0] as SubscriptionModel;
+};
