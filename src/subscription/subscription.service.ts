@@ -1,6 +1,8 @@
 import { connection } from '../app/database/mysql';
 import { OrderModel } from '../order/order.model';
 import { productModel } from '../product/product.model';
+import { SubscriptionLogAction } from '../subscription-log/subscription-log.model';
+import { createSubscriptionLog } from '../subscription-log/subscription-log.service';
 import { SubscriptionModel, SubscriptionStatus } from './subscription.model';
 
 /**
@@ -78,17 +80,44 @@ export const processSubscription = async (
   options: ProcessSubscriptionOptions,
 ) => {
   // 解构数据
-  const { userId, order, product } = options;
+  const {
+    userId,
+    order,
+    product: {
+      meta: { subscriptionType },
+    },
+  } = options;
 
   // 调取用户的有效订阅
   const subscription = await getUserValidSubscription(userId);
 
+  // 订阅 ID
+  let subscriptionId = subscription ? subscription.id : null;
+
+  // 订阅动作
+  let action: SubscriptionLogAction;
+
   // 全新订阅
   if (!subscription) {
-    await createSubscription({
+    const data = await createSubscription({
       userId,
-      type: product.meta.subscriptionType,
+      type: subscriptionType,
       status: SubscriptionStatus.pending,
     });
+
+    action = SubscriptionLogAction.create;
+    subscriptionId = data.insertId;
   }
+
+  // 创建订阅日志
+  await createSubscriptionLog({
+    subscriptionId,
+    userId,
+    orderId: order.id,
+    action,
+    meta: JSON.stringify({
+      subscriptionType,
+      totalAmount: order.totalAmount,
+    }),
+  });
 };
