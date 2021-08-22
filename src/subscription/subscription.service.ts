@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { connection } from '../app/database/mysql';
 import { OrderModel } from '../order/order.model';
 import { productModel } from '../product/product.model';
@@ -107,6 +108,19 @@ export const processSubscription = async (
 
     action = SubscriptionLogAction.create;
     subscriptionId = data.insertId;
+  } else {
+    // 检查用户订阅是否过期
+    const isExpired = dayjs().isAfter(subscription.expired);
+
+    // 续订
+    if (subscriptionType === subscription.type && !isExpired) {
+      action = SubscriptionLogAction.renew;
+    }
+
+    // 重订
+    if (subscriptionType === subscription.type && isExpired) {
+      action = SubscriptionLogAction.resubscribe;
+    }
   }
 
   // 创建订阅日志
