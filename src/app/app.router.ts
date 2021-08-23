@@ -1,4 +1,8 @@
 import express, { request, response } from 'express';
+import { getOrderById } from '../order/order.service';
+import { productType } from '../product/product.model';
+import { getProductById } from '../product/product.service';
+import { postProcessSubscription } from '../subscription/subscription.service';
 import { UserMetaType } from '../user_meta/user-mate.model';
 import {
   createUserMeta,
@@ -16,6 +20,20 @@ router.post('/echo', async (request, response) => {
   const userMeta = await getUserMetaByWeixinUnionId('321');
 
   response.status(201).send(userMeta);
+});
+
+router.post('/pay/:orderId', async (request, response) => {
+  const { orderId } = request.params;
+
+  const order = await getOrderById(parseInt(orderId, 10));
+
+  const product = await getProductById(order.productId);
+
+  if (product.type === productType.subscription) {
+    await postProcessSubscription({ order, product });
+  }
+
+  response.sendStatus(200);
 });
 /**
  * 导出默认接口
