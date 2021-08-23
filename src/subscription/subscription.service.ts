@@ -4,7 +4,10 @@ import { OrderModel } from '../order/order.model';
 import { productModel } from '../product/product.model';
 import { getProductByType } from '../product/product.service';
 import { SubscriptionLogAction } from '../subscription-log/subscription-log.model';
-import { createSubscriptionLog } from '../subscription-log/subscription-log.service';
+import {
+  createSubscriptionLog,
+  getSubscriptionLogByOrderId,
+} from '../subscription-log/subscription-log.service';
 import {
   SubscriptionModel,
   SubscriptionStatus,
@@ -206,4 +209,104 @@ export const getSubscriptionById = async (subscriptionId: number) => {
 
   // 提供数据
   return data[0] as SubscriptionModel;
+};
+
+/**
+ * 处理订阅：后期
+ */
+export interface PostProcessSubscription {
+  order: OrderModel;
+  product: productModel;
+}
+
+export const postProcessSubscription = async (
+  options: PostProcessSubscription,
+) => {
+  // 解构数据
+  const {
+    order: { id: orderId, userId },
+    product: {
+      meta: { subscriptionType },
+    },
+  } = options;
+
+  // 订阅日志
+  const subscriptionLog = await getSubscriptionLogByOrderId(orderId);
+
+  // 找出订阅
+  const subscription = await getSubscriptionById(
+    subscriptionLog.subscriptionId,
+  );
+
+  // 订阅日志动作
+  let action: SubscriptionLogAction;
+
+  // 之前的订阅类型
+  let preType = subscription.type;
+
+  // 订阅状态
+  const status = SubscriptionStatus.valid;
+
+  // 日期时间格式
+  const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+
+  // 新订阅
+  if (subscription.status === SubscriptionStatus.pending) {
+    subscription.expired = dayjs(Date.now())
+      .add(1, 'year')
+      .format(dateTimeFormat);
+
+    action = SubscriptionLogAction.statusChanged;
+    preType = null;
+  }
+
+  // 续订
+  if (
+    subscriptionType === subscription.type &&
+    subscriptionLog.action === SubscriptionLogAction.renew
+  ) {
+    subscription.expired = dayjs(subscription.expired)
+      .add(1, 'year')
+      .format(dateTimeFormat);
+
+    action = SubscriptionLogAction.renewed;
+  }
+
+  // 重订
+  if (
+    subscriptionType === subscription.type &&
+    subscriptionLog.action === SubscriptionLogAction.resubscribe
+  ) {
+    subscription.expired = dayjs(Date.now())
+      .add(1, 'year')
+      .format(dateTimeFormat);
+
+    action = SubscriptionLogAction.resubscribed;
+  }
+
+  // 升级
+  if (subscriptionLog.action === SubscriptionLogAction.upgrade) {
+    action = SubscriptionLogAction.upgraded;
+  }
+
+  // 更新订阅
+  await updateSubscription(subscription.id, {
+    type: subscriptionType,
+    status,
+    expired: subscription.expired,
+  });
+
+  // 创建订阅日志
+  await createSubscriptionLog({
+    userId,
+    subscriptionId: subscription.id,
+    orderId,
+    action,
+    meta: JSON.stringify({
+      status,
+      expired: dayjs(subscription.expired).toISOString(),
+      type: subscriptionType,
+      preType,
+    }),
+  });
 };
