@@ -1,5 +1,5 @@
 import express from 'express';
-import { authGuard } from '../auth/auth.middleware';
+import { accessControl, authGuard } from '../auth/auth.middleware';
 import * as subscriptionController from './subscription.controller';
 
 /**
@@ -14,6 +14,16 @@ router.get(
   '/valid-subscription',
   authGuard,
   subscriptionController.validSubscription,
+);
+
+/**
+ * 订阅历史
+ */
+router.get(
+  '/subscriptions/:subscriptionId/history',
+  authGuard,
+  accessControl({ prossession: true }),
+  subscriptionController.history,
 );
 
 /**
