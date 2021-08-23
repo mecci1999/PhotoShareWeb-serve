@@ -186,3 +186,24 @@ export const processSubscription = async (
   // 提供数据
   return action === SubscriptionLogAction.upgrade ? { order } : null;
 };
+
+/**
+ * 按 ID 调取订阅的方法
+ */
+export const getSubscriptionById = async (subscriptionId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      *
+    FROM
+      subscription
+    WHERE
+      subscription.id = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, subscriptionId);
+
+  // 提供数据
+  return data[0] as SubscriptionModel;
+};
