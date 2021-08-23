@@ -310,3 +310,46 @@ export const postProcessSubscription = async (
     }),
   });
 };
+
+/**
+ * 按 ID 调取订阅历史
+ */
+export interface SubscriptionHistory {
+  id?: number;
+  action?: SubscriptionLogAction;
+  meta?: any;
+  created?: string;
+  orderId?: number;
+  totalAmount?: string;
+}
+
+export const getSubscriptionHistory = async (subscriptionId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      log.id,
+      log.action,
+      log.meta,
+      log.created,
+      log.orderId,
+      order.totalAmount
+    FROM
+      subscription
+    LEFT JOIN subscription_log AS log
+      ON subscription.id = log.subscriptionId
+    LEFT JOIN \`order\`
+      ON order.id = log.orderId
+    WHERE
+      order.status = 'completed'
+      AND log.action IN ('create', 'renewed', 'resubscribed', 'upgraded')
+      AND subscription.id = ?
+    ORDER BY
+      log.id DESC
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, subscriptionId);
+
+  // 提供数据
+  return data as Array<SubscriptionHistory>;
+};
