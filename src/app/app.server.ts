@@ -1,5 +1,6 @@
 import http from 'http';
 import { Server } from 'socket.io';
+import ShortUniqueId from 'short-unique-id';
 import { ALLOW_ORIGIN } from './app.config';
 import app from './index';
 
@@ -17,6 +18,11 @@ export const socketIoServer = new Server(httpServer, {
     allowedHeaders: ['X-Total-Count'],
   },
 });
+
+/**
+ * UID
+ */
+export const uid = new ShortUniqueId();
 
 /**
  * 默认导出
