@@ -110,6 +110,10 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '无效下载令牌';
       break;
+    case 'PAYMENT_EXPIRED':
+      statusCode = 400;
+      message = '支付地址已过期';
+      break;
     default:
       statusCode = 500;
       message = '服务器暂时出了点问题 ~~';
