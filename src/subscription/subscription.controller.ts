@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import { Request, Response, NextFunction } from 'express';
-import { SubscriptionModel } from './subscription.model';
+import { STANDARD_SUBSCRIPTION_DOWNLOAD_LIMIT_PER_WEEK } from '../app/app.config';
+import { countDownloads } from '../download/download.service';
+import { SubscriptionModel, SubscriptionType } from './subscription.model';
 import {
   getSubscriptionHistory,
   getUserValidSubscription,
@@ -12,6 +14,8 @@ import {
 export interface ValidSubscription extends SubscriptionModel {
   isExpired: boolean;
   daysRemaining: number;
+  weeklyDownloads: number;
+  weeklyDownloadsLimit: number;
 }
 
 export const validSubscription = async (
@@ -39,6 +43,21 @@ export const validSubscription = async (
       validSubscription.daysRemaining = validSubscription.isExpired
         ? 0
         : dayjs(subscription.expired).diff(dayjs(), 'days');
+
+      // 统计用户当前下载文件数量和下载限制
+      const { count } = await countDownloads({
+        userId,
+        type: 'subscription',
+        datetime: '7-day',
+      });
+
+      validSubscription.weeklyDownloads = count;
+
+      if (validSubscription.type === SubscriptionType.standard) {
+        validSubscription.weeklyDownloadsLimit = STANDARD_SUBSCRIPTION_DOWNLOAD_LIMIT_PER_WEEK;
+      } else {
+        validSubscription.weeklyDownloadsLimit = null;
+      }
     }
 
     // 做出响应

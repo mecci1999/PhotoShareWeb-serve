@@ -128,7 +128,7 @@ export const countDownloads = async (options: CountDownloadsOptions) => {
   // 准备查询
   const statement = `
     SELECT
-      COUNT(download.id) as count
+      COUNT(download.id) AS count
     FROM
       download
     WHERE
