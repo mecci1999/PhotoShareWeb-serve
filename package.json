@@ -25,7 +25,8 @@
     "multer": "^1.4.2",
     "mysql2": "^2.1.0",
     "short-unique-id": "^3.2.0",
-    "socket.io": "^3.0.4"
+    "socket.io": "^3.0.4",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -37,6 +38,7 @@
     "@types/mysql2": "github:types/mysql2",
     "@types/node": "^16.4.0",
     "@types/supertest": "^2.0.9",
+    "@types/xml2js": "^0.4.8",
     "dotenv": "^8.3.0",
     "jest": "^25.5.4",
     "prettier": "1.19.1",

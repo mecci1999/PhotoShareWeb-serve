@@ -9,7 +9,7 @@ import {
   getUserMetaByWeixinUnionId,
   updateUserMeta,
 } from '../user_meta/user-meta.service';
-import { logger } from './app.server';
+import { logger, xmlBuilder, xmlParser } from './app.service';
 
 const router = express.Router();
 
@@ -18,9 +18,15 @@ router.get('/', (request, response) => {
 });
 
 router.post('/echo', async (request, response) => {
-  logger.info('测试一下 ~~');
-  logger.error('测试一下 ~~');
-  logger.debug('测试一下 ~~');
+  const xmlDate = xmlBuilder.buildObject({
+    message: '您好!',
+  });
+
+  logger.info('xmlDate', xmlDate);
+
+  const data = await xmlParser.parseStringPromise(xmlDate);
+
+  logger.debug('data', data);
 
   response.status(201);
 });
