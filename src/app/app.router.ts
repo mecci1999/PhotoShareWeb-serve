@@ -9,6 +9,7 @@ import {
   getUserMetaByWeixinUnionId,
   updateUserMeta,
 } from '../user_meta/user-meta.service';
+import { logger } from './app.server';
 
 const router = express.Router();
 
@@ -17,9 +18,11 @@ router.get('/', (request, response) => {
 });
 
 router.post('/echo', async (request, response) => {
-  const userMeta = await getUserMetaByWeixinUnionId('321');
+  logger.info('测试一下 ~~');
+  logger.error('测试一下 ~~');
+  logger.debug('测试一下 ~~');
 
-  response.status(201).send(userMeta);
+  response.status(201);
 });
 
 router.post('/pay/:orderId', async (request, response) => {
