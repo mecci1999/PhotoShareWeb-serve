@@ -67,6 +67,8 @@ export const serve = async (
     //要提供的图像尺寸
     const { size } = request.query;
 
+    if (!size) throw new Error('BAD_REQUEST');
+
     //文件名和目录
     let filename = file.filename;
     let root = 'uploads';
