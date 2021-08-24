@@ -108,3 +108,24 @@ export const update = async (
     next(error);
   }
 };
+
+/**
+ * 订单支付
+ */
+export const pay = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const {
+    body: { order },
+  } = request;
+
+  try {
+    // 作出响应
+    response.send(order);
+  } catch (error) {
+    next(error);
+  }
+};
