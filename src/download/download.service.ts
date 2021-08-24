@@ -82,3 +82,65 @@ export const updateDownload = async (
   // 提供数据
   return data as any;
 };
+
+/**
+ * 统计用户下载次数
+ */
+export interface CountDownloadsOptions {
+  userId: number;
+  datetime: string;
+  type: string;
+}
+
+export const countDownloads = async (options: CountDownloadsOptions) => {
+  // 解构选项
+  const { userId, datetime, type } = options;
+
+  // 查询条件
+  const whereUsed = 'download.used IS NOT NULL';
+  const whereUserId = 'download.userId = ?';
+  let whereDatetime = '';
+  let whereType = '';
+
+  switch (datetime) {
+    case '1-day':
+      whereDatetime = 'download.created > now() - INTERVAL 1 DAY';
+      break;
+    case '7-day':
+      whereDatetime = 'download.created > now() - INTERVAL 7 DAY';
+      break;
+    case '1-month':
+      whereDatetime = 'download.created > now() - INTERVAL 1 MONTH';
+      break;
+    case '3-month':
+      whereDatetime = 'download.created > now() - INTERVAL 3 MONTH';
+      break;
+  }
+
+  if (type === 'license') {
+    whereType = 'download.licenseId IS NOT NULL';
+  }
+
+  if (type === 'subscription') {
+    whereType = 'download.licenseId IS NULL';
+  }
+
+  // 准备查询
+  const statement = `
+    SELECT
+      COUNT(download.id) as count
+    FROM
+      download
+    WHERE
+      ${whereUsed}
+      AND ${whereUserId}
+      AND ${whereDatetime}
+      AND ${whereType}
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, userId);
+
+  // 提供数据
+  return data[0] as { count: number };
+};
