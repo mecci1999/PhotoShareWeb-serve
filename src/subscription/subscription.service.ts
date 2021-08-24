@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { DATE_TIME_FORMAT } from '../app/app.config';
 import { connection } from '../app/database/mysql';
 import { OrderModel } from '../order/order.model';
 import { productModel } from '../product/product.model';
@@ -247,14 +248,11 @@ export const postProcessSubscription = async (
   // 订阅状态
   const status = SubscriptionStatus.valid;
 
-  // 日期时间格式
-  const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
-
   // 新订阅
   if (subscription.status === SubscriptionStatus.pending) {
     subscription.expired = dayjs(Date.now())
       .add(1, 'year')
-      .format(dateTimeFormat);
+      .format(DATE_TIME_FORMAT);
 
     action = SubscriptionLogAction.statusChanged;
     preType = null;
@@ -267,7 +265,7 @@ export const postProcessSubscription = async (
   ) {
     subscription.expired = dayjs(subscription.expired)
       .add(1, 'year')
-      .format(dateTimeFormat);
+      .format(DATE_TIME_FORMAT);
 
     action = SubscriptionLogAction.renewed;
   }
@@ -279,7 +277,7 @@ export const postProcessSubscription = async (
   ) {
     subscription.expired = dayjs(Date.now())
       .add(1, 'year')
-      .format(dateTimeFormat);
+      .format(DATE_TIME_FORMAT);
 
     action = SubscriptionLogAction.resubscribed;
   }
