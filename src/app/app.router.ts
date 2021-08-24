@@ -1,5 +1,6 @@
 import express, { request, response } from 'express';
 import { getOrderById } from '../order/order.service';
+import { paymentRecived } from '../payment/payment.service';
 import { productType } from '../product/product.model';
 import { getProductById } from '../product/product.service';
 import { postProcessSubscription } from '../subscription/subscription.service';
@@ -31,16 +32,9 @@ router.post('/echo', async (request, response) => {
   response.status(201);
 });
 
-router.post('/pay/:orderId', async (request, response) => {
-  const { orderId } = request.params;
-
-  const order = await getOrderById(parseInt(orderId, 10));
-
-  const product = await getProductById(order.productId);
-
-  if (product.type === productType.subscription) {
-    await postProcessSubscription({ order, product });
-  }
+router.post('/payments/notify', async (request, response) => {
+  // const { orderId } = request.body;
+  // await paymentRecived(orderId, { message: '通知信息 ~~' });
 
   response.sendStatus(200);
 });
