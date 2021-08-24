@@ -98,6 +98,18 @@ export const defaultErrorHandler = (
       statusCode = 403;
       message = '没有权限访问该内容';
       break;
+    case 'DOWNLOAD_LIMIT_REACHED':
+      statusCode = 400;
+      message = '已达下载上限';
+      break;
+    case 'DOWNLOAD_EXPIRED':
+      statusCode = 400;
+      message = '下载已过期';
+      break;
+    case 'DOWNLOAD_INVALID':
+      statusCode = 400;
+      message = '无效下载令牌';
+      break;
     default:
       statusCode = 500;
       message = '服务器暂时出了点问题 ~~';
