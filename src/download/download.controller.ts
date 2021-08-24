@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { uid } from '../app/app.server';
+import { uid } from '../app/app.service';
 import { createDownload, getDownloadById } from './download.service';
 
 /**
