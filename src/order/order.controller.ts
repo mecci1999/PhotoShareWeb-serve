@@ -68,7 +68,7 @@ export const store = async (
     }
 
     // 作出响应
-    response.status(201).send(data);
+    response.status(201).send(order);
   } catch (error) {
     next(error);
   }
