@@ -77,6 +77,16 @@ router.get(
 );
 
 /**
+ * 订单订阅项目
+ */
+router.get(
+  '/orders/subscription-item',
+  authGuard,
+  accessControl({ isAdmin: true }),
+  orderController.subscriptionItem,
+);
+
+/**
  * 默认导出
  */
 export default router;

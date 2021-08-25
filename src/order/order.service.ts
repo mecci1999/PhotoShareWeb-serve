@@ -208,7 +208,7 @@ export const getOrderSubscriptionItem = async (subscriptionType: string) => {
       product ON order.productId = product.id
     WHERE
       order.status = 'completed'
-      AND JSON_EXTRACT(product.meta,"$.subscriptionType" = ?)
+      AND JSON_EXTRACT(product.meta,"$.subscriptionType") = ?
     GROUP BY
       product.id
   `;

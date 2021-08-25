@@ -10,6 +10,7 @@ import {
   createOrder,
   getOrderLicenseItem,
   getOrders,
+  getOrderSubscriptionItem,
   updateOrder,
 } from './order.service';
 
@@ -176,6 +177,27 @@ export const licenseItem = async (
 
   try {
     const item = await getOrderLicenseItem(parseInt(orderId, 10));
+
+    // 做出响应
+    response.send(item);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 订单订阅项目
+ */
+export const subscriptionItem = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const { type } = request.query;
+
+  try {
+    const item = await getOrderSubscriptionItem(`${type}`);
 
     // 做出响应
     response.send(item);
