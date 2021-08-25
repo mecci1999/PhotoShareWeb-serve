@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { DATE_TIME_FORMAT } from '../app/app.config';
+import { socketIoServer } from '../app/app.server';
 import { connection } from '../app/database/mysql';
 import { OrderModel } from '../order/order.model';
 import { productModel } from '../product/product.model';
@@ -218,6 +219,7 @@ export const getSubscriptionById = async (subscriptionId: number) => {
 export interface PostProcessSubscription {
   order: OrderModel;
   product: productModel;
+  socketId: string;
 }
 
 export const postProcessSubscription = async (
@@ -229,6 +231,7 @@ export const postProcessSubscription = async (
     product: {
       meta: { subscriptionType },
     },
+    socketId,
   } = options;
 
   // 订阅日志
@@ -248,8 +251,11 @@ export const postProcessSubscription = async (
   // 订阅状态
   const status = SubscriptionStatus.valid;
 
-  // 新订阅
+  // 有效SocketId
+  const isValidSocketId = socketId && socketId !== 'NULL';
+
   if (subscription.status === SubscriptionStatus.pending) {
+    // 新订阅
     subscription.expired = dayjs(Date.now())
       .add(1, 'year')
       .format(DATE_TIME_FORMAT);
@@ -307,6 +313,17 @@ export const postProcessSubscription = async (
       preType,
     }),
   });
+
+  // 实时事件
+  if (isValidSocketId) {
+    socketIoServer.to(socketId).emit('subscriptionChanged', {
+      ...subscription,
+      type: subscriptionType,
+      status,
+      expired: subscription.expired,
+      action,
+    });
+  }
 };
 
 /**
