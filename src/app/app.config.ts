@@ -69,3 +69,8 @@ export const STANDARD_SUBSCRIPTION_DOWNLOAD_LIMIT_PER_WEEK = parseInt(
  * 日期时间
  */
 export const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+/**
+ * 订单
+ */
+export const ORDER_PER_PAGE = parseInt(process.env['ORDER_PER_PAGE'], 10);
