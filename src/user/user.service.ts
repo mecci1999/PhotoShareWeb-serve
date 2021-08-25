@@ -1,7 +1,6 @@
 import { connection } from '../app/database/mysql';
 import { UserModel } from './user.model';
 
-
 /**
  * 创建用户
  */
@@ -12,7 +11,7 @@ export const createUser = async (user: UserModel) => {
     SET ?
   `;
   //执行查询
-  const [data] = await connection.promise().query(statement,user);
+  const [data] = await connection.promise().query(statement, user);
 
   //提供数据
   return data;
@@ -28,8 +27,8 @@ interface GetUserOptions {
 export const getUser = (condition: string) => {
   return async (param: string | number, options: GetUserOptions = {}) => {
     //准备选项
-    const {password} = options;
-    
+    const { password } = options;
+
     //准备查询
     const statement = `
       SELECT 
@@ -37,8 +36,20 @@ export const getUser = (condition: string) => {
       user.name,
       IF (
         COUNT(avatar.id), 1, NULL
-      ) AS avatar
-      ${password ? ',password':''}
+      ) AS avatar,
+      (
+        SELECT
+          JSON_OBJECT(
+            'type', subscription.type,
+            'status',IF(now() < subscription.expired, 'valid', 'expired')
+          )
+        FROM
+          subscription
+        WHERE
+          user.id = subscription.userId
+          AND subscription.status = 'valid'
+      ) AS subscription
+      ${password ? ',password' : ''}
       FROM
         user
       LEFT JOIN avatar
@@ -46,10 +57,10 @@ export const getUser = (condition: string) => {
       WHERE
         ${condition} = ?
     `;
-    
+
     //执行查询
     const [...data] = await connection.promise().query(statement, param);
-    
+
     //提供数据
     return data[0][0].id ? data[0][0] : null;
   };
@@ -63,16 +74,14 @@ export const getUserByName = getUser('user.name');
 /**
  * 按用户 ID 查找用户
  */
- export const getUserById = getUser('user.id');
+export const getUserById = getUser('user.id');
 
- /**
+/**
  * 用户更新数据
  */
- export const updateUser = async (
-   userId: number, userData: UserModel,
- ) => {
-   // 准备查询
-   const statement = `
+export const updateUser = async (userId: number, userData: UserModel) => {
+  // 准备查询
+  const statement = `
       UPDATE
         user
       SET ?
@@ -82,18 +91,20 @@ export const getUserByName = getUser('user.name');
   //  // SQL 参数
   //  const params = [userData, userId];
 
-   // 执行查询
-   const [data] = await connection.promise().query(statement, [userData, userId]);
+  // 执行查询
+  const [data] = await connection
+    .promise()
+    .query(statement, [userData, userId]);
 
-   // 提供数据
-   return data;
- };
- 
- /**
+  // 提供数据
+  return data;
+};
+
+/**
  * 删除用户
  */
- export const deleteUser = async (userId: number) => {
-   // 准备查询
+export const deleteUser = async (userId: number) => {
+  // 准备查询
   const statement = `
     DELETE FROM user
     WHERE id = ?
@@ -104,4 +115,4 @@ export const getUserByName = getUser('user.name');
 
   // 提供数据
   return data;
- };
+};
