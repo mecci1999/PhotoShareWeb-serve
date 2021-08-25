@@ -138,3 +138,51 @@ export const countOrders = async (options: GetOrdersOptions) => {
   // 提供数据
   return data[0] as any;
 };
+
+/**
+ * 定义获取订单许可项目
+ */
+export const getOrderLicenseItem = async (orderId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      post.id,
+      post.title,
+      ${postSqlFragment.file},
+      ${postSqlFragment.user},
+      (
+        SELECT
+          JSON_OBJECT(
+            'count', COUNT(order.id),
+            'totalAmount', IF(
+              COUNT(order.id),
+              SUM(order.totalAmount),
+              0
+            )
+          )
+        FROM
+          license
+        LEFT JOIN \`order\` ON license.orderId = order.id
+        WHERE
+          license.resourceId = (
+            SELECT resourceId FROM license WHERE license.orderId = ?
+          ) AND order.status = 'completed'
+      ) AS sales
+    FROM
+      post
+    ${postSqlFragment.leftJoinOneFile}
+    ${postSqlFragment.leftJoinUser}
+    WHERE
+      post.id = (SELECT resourceId FROM license WHERE license.orderId = ?)
+    GROUP BY
+      post.id
+  `;
+
+  // 执行查询
+  const [data] = await connection
+    .promise()
+    .query(statement, [orderId, orderId]);
+
+  // 提供数据
+  return data[0] as any;
+};
