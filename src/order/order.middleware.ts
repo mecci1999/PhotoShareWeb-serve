@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import _ from 'lodash';
+import _, { filter } from 'lodash';
 import { PaymentName } from '../payment/payment.model';
 import { getPostById, PostStatus } from '../post/post.service';
-import { ProductStatus } from '../product/product.model';
+import { ProductStatus, productType } from '../product/product.model';
 import { getProductById } from '../product/product.service';
 import { OrderStatus } from './order.model';
 import { getOrderById } from './order.service';
@@ -176,6 +176,7 @@ export interface OrderIndexAllowedFilter {
   status?: OrderStatus | string;
   owner?: number;
   created?: Array<string>;
+  productType?: productType;
 }
 
 export const orderIndexFilter = async (
@@ -204,9 +205,13 @@ export const orderIndexFilter = async (
   filters.owner = userId;
 
   // 管理模式
-  const { admin } = request.query;
+  const { admin, productType } = request.query as any;
   if (admin === 'true' && userId === 1) {
     delete filters.owner;
+
+    if (productType) {
+      filters.productType = productType;
+    }
   }
 
   // 过滤条件 sql
@@ -237,6 +242,9 @@ export const orderIndexFilter = async (
         break;
       case 'owner':
         sql = 'post.userId = ?';
+        break;
+      case 'productType':
+        sql = 'product.type = ?';
         break;
     }
     filterSql = `${filterSql} AND ${sql}`;
