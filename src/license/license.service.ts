@@ -51,9 +51,25 @@ export const getLicenseByOrderId = async (orderId: number) => {
   // 准备查询
   const statement = `
     SELECT
-      *
+      license.id,
+      license.userId,
+      license.orderId,
+      license.resourceType,
+      license.resourceId,
+      license.status,
+      license.created,
+      JSON_OBJECT(
+        'id', post.id,
+        'title', post.title,
+        'user', JSON_OBJECT(
+          'id', resourceUser.id,
+          'name', resourcrUser.name
+        )
+      ) AS resource
     FROM
       license
+    LEFT JOIN post ON license.resourceId = post.id
+    LEFT JOIN user AS resourceUser ON resourceUser.id = post.userId
     WHERE
       license.orderId = ?
   `;
@@ -62,7 +78,7 @@ export const getLicenseByOrderId = async (orderId: number) => {
   const [data] = await connection.promise().query(statement, orderId);
 
   // 提供数据
-  return data[0] as LicenseModel;
+  return data[0] as any;
 };
 
 /**
@@ -100,7 +116,7 @@ export const getUserValidLicense = async (
 };
 
 /**
- * 调取可查询列表
+ * 调取许可列表
  */
 export interface GetLicensesOptions {
   filters?: { user?: number };
