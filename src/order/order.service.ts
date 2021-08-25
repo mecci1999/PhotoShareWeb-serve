@@ -186,3 +186,36 @@ export const getOrderLicenseItem = async (orderId: number) => {
   // 提供数据
   return data[0] as any;
 };
+
+/**
+ * 调取订单订阅项目
+ */
+export const getOrderSubscriptionItem = async (subscriptionType: string) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      product.id,
+      product.title,
+      product.type,
+      product.meta,
+      JSON_OBJECT(
+        'count',COUNT(order.id),
+        'totalAmount',SUM(order.totalAmount)
+      ) AS sales
+    FROM
+      \`order\`
+    LEFT JOIN
+      product ON order.productId = product.id
+    WHERE
+      order.status = 'completed'
+      AND JSON_EXTRACT(product.meta,"$.subscriptionType" = ?)
+    GROUP BY
+      product.id
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, subscriptionType);
+
+  // 提供数据
+  return data[0] as any;
+};
