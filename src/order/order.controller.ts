@@ -5,7 +5,12 @@ import { OrderLogAciton } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
 import { productType } from '../product/product.model';
 import { processSubscription } from '../subscription/subscription.service';
-import { createOrder, getOrders, updateOrder } from './order.service';
+import {
+  countOrders,
+  createOrder,
+  getOrders,
+  updateOrder,
+} from './order.service';
 
 /**
  * 创建订单
@@ -144,8 +149,14 @@ export const index = async (
   try {
     const orders = await getOrders({ filter, pagination });
 
+    // 统计订单数量和金额
+    const ordersCount = await countOrders({ filter });
+
+    // 设置响应头部
+    response.header('X-Total-Count', ordersCount.count);
+
     // 做出响应
-    response.send(orders);
+    response.send({ orders, ordersCount });
   } catch (error) {
     next(error);
   }

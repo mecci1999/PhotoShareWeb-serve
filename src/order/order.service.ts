@@ -67,8 +67,8 @@ export const updateOrder = async (orderId: number, order: OrderModel) => {
  * 订单列表
  */
 export interface GetOrdersOptions {
-  filter: GetPostsOptionsFilter;
-  pagination: GetPostsOptionsPagination;
+  filter?: GetPostsOptionsFilter;
+  pagination?: GetPostsOptionsPagination;
 }
 
 export const getOrders = async (options: GetOrdersOptions) => {
@@ -104,4 +104,37 @@ export const getOrders = async (options: GetOrdersOptions) => {
 
   // 提供数据
   return data as any;
+};
+
+/**
+ * 统计订单
+ */
+export const countOrders = async (options: GetOrdersOptions) => {
+  // 解构选项
+  const { filter } = options;
+
+  // 准备查询
+  const statement = `
+    SELECT
+      COUNT(*) AS count,
+      SUM(totalAmount) AS totalAmount
+    FROM
+      (
+        SELECT
+          order.totalAmount
+        FROM
+          \`order\`
+        ${orderSqlFragment.leftJoinTables}
+        WHERE
+          ${filter.sql}
+        GROUP BY
+          order.id
+      ) AS count
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, filter.param);
+
+  // 提供数据
+  return data[0] as any;
 };
