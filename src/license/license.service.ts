@@ -63,7 +63,7 @@ export const getLicenseByOrderId = async (orderId: number) => {
         'title', post.title,
         'user', JSON_OBJECT(
           'id', resourceUser.id,
-          'name', resourcrUser.name
+          'name', resourceUser.name
         )
       ) AS resource
     FROM

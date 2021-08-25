@@ -8,6 +8,7 @@ import { processSubscription } from '../subscription/subscription.service';
 import {
   countOrders,
   createOrder,
+  getOrderLicenseItem,
   getOrders,
   updateOrder,
 } from './order.service';
@@ -157,6 +158,27 @@ export const index = async (
 
     // 做出响应
     response.send({ orders, ordersCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 订单许可项目
+ */
+export const licenseItem = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const { orderId } = request.params;
+
+  try {
+    const item = await getOrderLicenseItem(parseInt(orderId, 10));
+
+    // 做出响应
+    response.send(item);
   } catch (error) {
     next(error);
   }

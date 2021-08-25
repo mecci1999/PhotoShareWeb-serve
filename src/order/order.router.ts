@@ -7,6 +7,7 @@ import * as orderController from './order.controller';
 import {
   orderGuard,
   orderIndexFilter,
+  orderLicenseItemGuard,
   payOrderGuard,
   updateOrderGuard,
 } from './order.middleware';
@@ -63,6 +64,16 @@ router.get(
   accessLog({ action: 'getOrders', resourceType: 'order' }),
   orderIndexFilter,
   orderController.index,
+);
+
+/**
+ * 订单许可项目
+ */
+router.get(
+  '/orders/:orderId/license-item',
+  authGuard,
+  orderLicenseItemGuard,
+  orderController.licenseItem,
 );
 
 /**
