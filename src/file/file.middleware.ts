@@ -8,6 +8,7 @@ import {
 } from '../download/download.service';
 import dayjs from 'dayjs';
 import { DATE_TIME_FORMAT } from '../app/app.config';
+import { socketIoServer } from '../app/app.server';
 
 /**
  * 文件过滤器
@@ -99,7 +100,7 @@ export const fileDownloadGuard = async (
 ) => {
   // 准备数据
   const {
-    query: { token },
+    query: { token, socketId },
     params: { fileId },
   } = request;
 
@@ -131,6 +132,10 @@ export const fileDownloadGuard = async (
       used: dayjs().format(DATE_TIME_FORMAT),
     });
 
+    // 触发事件
+    if (socketId) {
+      socketIoServer.to(`${socketId}`).emit('fileDownloadUsed', download);
+    }
     //设置请求主体
     request.body = { download, file };
   } catch (error) {
