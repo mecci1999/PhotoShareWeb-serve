@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import _, { filter } from 'lodash';
+import { getLicenseByOrderId } from '../license/license.service';
 import { PaymentName } from '../payment/payment.model';
 import { getPostById, PostStatus } from '../post/post.service';
 import { ProductStatus, productType } from '../product/product.model';
@@ -261,6 +262,40 @@ export const orderIndexFilter = async (
     sql: filterSql,
     param: params,
   };
+
+  // 下一步
+  next();
+};
+
+/**
+ * 订单许可项目守卫
+ */
+export const orderLicenseItemGuard = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const {
+    params: { orderId },
+    user: { id: userId },
+  } = request;
+
+  // 放行管理员
+  if (userId === 1) next();
+
+  try {
+    // 查看许可是否存在
+    const license = await getLicenseByOrderId(parseInt(orderId, 10));
+
+    if (!license) throw new Error('BAD_REQUEST');
+
+    const isOwner = userId === license.resource.user.id;
+
+    if (!isOwner) throw new Error('FORBIDDEN');
+  } catch (error) {
+    return next(error);
+  }
 
   // 下一步
   next();
