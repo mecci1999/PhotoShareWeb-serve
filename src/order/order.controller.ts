@@ -5,7 +5,7 @@ import { OrderLogAciton } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
 import { productType } from '../product/product.model';
 import { processSubscription } from '../subscription/subscription.service';
-import { createOrder, updateOrder } from './order.service';
+import { createOrder, getOrders, updateOrder } from './order.service';
 
 /**
  * 创建订单
@@ -125,6 +125,27 @@ export const pay = async (
   try {
     // 作出响应
     response.send(order);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 订单列表
+ */
+export const index = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const { filter, pagination } = request;
+
+  try {
+    const orders = await getOrders({ filter, pagination });
+
+    // 做出响应
+    response.send(orders);
   } catch (error) {
     next(error);
   }
