@@ -1,5 +1,11 @@
 import { connection } from '../app/database/mysql';
+import {
+  GetPostsOptionsFilter,
+  GetPostsOptionsPagination,
+} from '../post/post.service';
 import { OrderModel } from './order.model';
+import { orderSqlFragment } from './order.provide';
+import { sqlFragment as postSqlFragment } from '../post/post.provider';
 
 /**
  * 创建订单
@@ -52,6 +58,49 @@ export const updateOrder = async (orderId: number, order: OrderModel) => {
 
   // 执行查询
   const [data] = await connection.promise().query(statement, [order, orderId]);
+
+  // 提供数据
+  return data as any;
+};
+
+/**
+ * 订单列表
+ */
+export interface GetOrdersOptions {
+  filter: GetPostsOptionsFilter;
+  pagination: GetPostsOptionsPagination;
+}
+
+export const getOrders = async (options: GetOrdersOptions) => {
+  // 解构数据
+  const {
+    pagination: { limit, offset },
+    filter,
+  } = options;
+
+  // 准备查询
+  const statement = `
+    SELECT
+      ${orderSqlFragment.orderFileds},
+      ${postSqlFragment.user},
+      ${orderSqlFragment.productFiled}
+    FROM
+      \`order\`
+    ${orderSqlFragment.leftJoinTables}
+    WHERE ${filter.sql}
+    GROUP BY
+      order.id
+    ORDER BY
+      order.id DESC
+    LIMIT ?
+    OFFSET ?
+  `;
+
+  // 查询参数
+  const params = [...filter.param, limit, offset];
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, params);
 
   // 提供数据
   return data as any;
