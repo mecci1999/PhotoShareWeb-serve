@@ -77,7 +77,7 @@ export const serve = async (
     //判断size
     if (size) {
       //可用的图像尺寸
-      const imageSize = ['large', 'middle', 'thumbnail'];
+      const imageSize = ['large', 'medium', 'thumbnail'];
 
       if (!imageSize.some(item => item == size))
         throw new Error('FILE_NOT_FOUND');

@@ -70,7 +70,7 @@ export const ImageResizer = async (image: Jimp, file: Express.Multer.File) => {
     image
       .resize(640, Jimp.AUTO)
       .quality(85)
-      .write(`${filePath}-middle`);
+      .write(`${filePath}-medium`);
   }
 
   //缩略图尺寸
@@ -114,7 +114,7 @@ export const deletePostFiles = async (files: Array<FileModel>) => {
     const filesToDelete = [
       [uploads, file.filename],
       [...reszied, `${file.filename}-thumbnail`],
-      [...reszied, `${file.filename}-middle`],
+      [...reszied, `${file.filename}-medium`],
       [...reszied, `${file.filename}-large`],
     ];
 
