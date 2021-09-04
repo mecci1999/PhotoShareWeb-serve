@@ -1,19 +1,19 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
-import path from "path";
+import path from 'path';
 import _ from 'lodash';
-import { createAvatar, findAvatarByUserId } from "./avatar.service";
+import { createAvatar, findAvatarByUserId } from './avatar.service';
 
 /**
-* 上传头像文件
-*/
+ * 上传头像文件
+ */
 export const store = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 当前用户 ID
-  const {id: userId} = request.user;
+  const { id: userId } = request.user;
 
   // 头像文件信息
   const fileInfo = _.pick(request.file, ['mimetype', 'filename', 'size']);
@@ -36,15 +36,15 @@ export const store = async (
 };
 
 /**
-* 文件服务
-*/
+ * 文件服务
+ */
 export const serve = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 用户 ID
-  const {userId} = request.params;
+  const { userId } = request.params;
 
   try {
     //获取用户头像数据
@@ -55,19 +55,20 @@ export const serve = async (
     }
 
     // 要提供的头像尺寸
-    const {size} = request.query;
+    const { size } = request.query;
 
     //文件名和目录
     let filename = avatar.filename;
-    let root = path.join('uploads','avatar');
+    let root = path.join('uploads', 'avatar');
     let resized = 'resized';
 
     // 可用的头像尺寸
     if (size) {
-      const imageSize = ['large', 'middle', 'small'];
+      const imageSize = ['large', 'medium', 'small'];
 
       // 测试可用的头像大小
-      if(!imageSize.some(item => item == size)) throw new Error('FILE_NOT_FOUND');
+      if (!imageSize.some(item => item == size))
+        throw new Error('FILE_NOT_FOUND');
 
       // 检查文件是否存在
       const fileExist = fs.existsSync(
@@ -86,11 +87,10 @@ export const serve = async (
     response.sendFile(filename, {
       root,
       headers: {
-       'Content-Type': avatar.mimetype 
-      }
+        'Content-Type': avatar.mimetype,
+      },
     });
   } catch (error) {
     next(error);
   }
-  
 };
