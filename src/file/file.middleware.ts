@@ -66,25 +66,16 @@ export const fileProcessor = async (
   } catch (error) {
     return next(error);
   }
-  //const {imageSize, tags} = image['_exif'];
-  //准备文件数据
-  const { imageSize, tags } = {
-    imageSize: {
-      height: image.bitmap.height,
-      width: image.bitmap.width,
-    },
-    tags: {},
-  };
 
-  //在请求中添加文件数据
+  // 准备文件数据
+  const { imageSize, tags } = image['_exif'];
+
+  // 在请求中添加文件数据
   request.fileMetaData = {
     width: imageSize.width,
     height: imageSize.height,
     metadata: JSON.stringify(tags),
   };
-
-  //处理图像尺寸
-  ImageResizer(image, request.file);
 
   // 下一步
   next();
