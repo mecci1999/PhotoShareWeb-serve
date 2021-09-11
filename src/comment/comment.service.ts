@@ -190,10 +190,10 @@ export const getCommentReplies = async (options: GetCommentRepliesOptions) => {
   `;
 
   // 执行查询
-  const [...data] = await connection.promise().query(statement, commentId);
+  const [data] = await connection.promise().query(statement, commentId);
 
   // 提供数据
-  return data[0][0];
+  return data;
 };
 
 /**
