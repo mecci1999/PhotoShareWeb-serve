@@ -160,14 +160,14 @@ export const destroy = async (
 
   //执行删除
   try {
-    const data = await deleteComment(parseInt(commentId, 10));
-
     // 准备资源
     const isReply = await isReplyComment(parseInt(commentId, 10));
     const resourceType = isReply ? 'reply' : 'comment';
     const resource = await getCommentById(parseInt(commentId, 10), {
       resourceType,
     });
+
+    const data = await deleteComment(parseInt(commentId, 10));
 
     // 触发事件
     const eventName = isReply ? 'commentReplyDeleted' : 'commentDeleted';
