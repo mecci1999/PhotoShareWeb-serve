@@ -30,12 +30,19 @@ export const sqlFragment = {
       SELECT
         JSON_OBJECT(
           'id', repliedComment.id,
-          'content', repliedComment.content
+          'content', repliedComment.content,
+          'userId', repliedCommentUser.id,
+          'name', repliedCommentUser.name,
+          'avatar', IF(COUNT(repliedCommentUserAvatar.id), 1, NULL)
         )
       FROM
-          comment repliedComment
+        comment repliedComment
+      LEFT JOIN user AS repliedCommentUser
+        ON repliedCommentUser.id = repliedComment.userId
+      LEFT JOIN avatar AS repliedCommentUserAvatar
+        ON repliedCommentUser.id = repliedCommentUserAvatar.userId
       WHERE comment.parentId = repliedComment.id
-    ) AS repliedComment
+      ) AS repliedComment
   `,
   totalReplies: `
     (
