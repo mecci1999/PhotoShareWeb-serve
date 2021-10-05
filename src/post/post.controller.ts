@@ -28,7 +28,7 @@ export const index = async (
   next: NextFunction,
 ) => {
   // 解构查询符
-  const { status = '', auditStatus } = request.query;
+  const { status = '', auditStatus = '' } = request.query;
   const postStatus = (`${status}` as unknown) as PostStatus;
   const auditLogStatus = (`${auditStatus}` as unknown) as AuditLogStatus;
 

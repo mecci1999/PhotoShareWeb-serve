@@ -8,6 +8,7 @@ export interface GetPostsOptionsFilter {
   name: string;
   sql?: string | null;
   param?: string | null | Array<string | number>;
+  params?: Array<string>;
 }
 
 export interface GetPostsOptionsPagination {
@@ -54,6 +55,10 @@ export const getPosts = async (options: GetPostsOptions) => {
   // 设置 SQL 参数
   if (filter?.param) {
     params = [filter?.param, ...params];
+  }
+
+  if (filter.params) {
+    params = [...filter.params, ...params];
   }
 
   if (currentUser) {
@@ -228,7 +233,11 @@ export const getPostsTotalCount = async (options: GetPostsOptions) => {
   const { filter, postStatus: status, auditLogStatus: auditStatus } = options;
 
   // SQL 参数
-  const params = [filter?.param];
+  let params = [filter?.param];
+
+  if (filter.params) {
+    params = [...filter.params, ...params];
+  }
 
   // 发布状态
   const whereStatus = status
