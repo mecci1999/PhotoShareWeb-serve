@@ -106,7 +106,7 @@ export const getAccessCountByAction = async (
       access_log.action,
       DATE_FORMAT(access_log.created, '${dateTimeFormat}')
     ORDER BY
-      DATE_FORMAT(access_log.created, '${dateTimeFormat}') DESC
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}')
   `;
 
   // 执行查询
