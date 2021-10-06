@@ -37,4 +37,12 @@ export const allowedAccessCounts: Array<AccessCountListItem> = [
     action: 'searchUser',
     title: '搜索用户',
   },
+  {
+    action: 'searchCamera',
+    title: '搜索相机',
+  },
+  {
+    action: 'searchLens',
+    title: '搜索镜头',
+  },
 ];
