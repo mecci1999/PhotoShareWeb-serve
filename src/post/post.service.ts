@@ -7,7 +7,7 @@ import { sqlFragment } from './post.provider';
 export interface GetPostsOptionsFilter {
   name: string;
   sql?: string | null;
-  param?: string | null | Array<string | number>;
+  param?: string | Array<string | number> | null;
   params?: Array<string>;
 }
 

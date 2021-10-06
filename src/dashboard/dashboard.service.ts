@@ -73,7 +73,7 @@ interface GetAccessCountByActionOptions {
   filter: {
     name: string;
     sql?: string;
-    param?: string;
+    param?: string | Array<string | number>;
   };
 }
 
