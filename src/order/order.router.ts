@@ -1,6 +1,6 @@
 import express from 'express';
 import { accessLog } from '../access-log/access-log.middleware';
-import { ORDER_PER_PAGE } from '../app/app.config';
+import { ORDERS_PER_PAGE } from '../app/app.config';
 import { accessControl, authGuard } from '../auth/auth.middleware';
 import { paginate } from '../post/post.middleware';
 import * as orderController from './order.controller';
@@ -60,7 +60,7 @@ router.post(
 router.get(
   '/orders',
   authGuard,
-  paginate(ORDER_PER_PAGE),
+  paginate(ORDERS_PER_PAGE),
   accessLog({ action: 'getOrders', resourceType: 'order' }),
   orderIndexFilter,
   orderController.index,
