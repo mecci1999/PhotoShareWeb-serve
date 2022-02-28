@@ -80,7 +80,7 @@ router.get(
  * 订单订阅项目
  */
 router.get(
-  '/orders/subscription-item',
+  '/orders/:orderId/subscription-item',
   authGuard,
   accessControl({ isAdmin: true }),
   orderController.subscriptionItem,
