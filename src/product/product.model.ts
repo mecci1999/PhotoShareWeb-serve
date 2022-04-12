@@ -1,6 +1,7 @@
 export enum productType {
   license = 'license',
   subscription = 'subscription',
+  recharge = 'recharge',
 }
 
 export enum ProductStatus {

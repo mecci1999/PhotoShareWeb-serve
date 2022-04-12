@@ -19,7 +19,7 @@ export const orderGuard = async (
   // 准备数据
   const {
     user: { id: userId },
-    body: { payment, productId, resourceType, resourceId },
+    body: { payment, productId, resourceType, resourceId, amount },
   } = request;
 
   try {
@@ -31,7 +31,9 @@ export const orderGuard = async (
     }
 
     // 检查资源类型
-    const isValidResourceType = ['post', 'subscription'].includes(resourceType);
+    const isValidResourceType = ['post', 'subscription', 'recharge'].includes(
+      resourceType,
+    );
 
     if (!isValidResourceType) {
       throw new Error('BAD_REQUEST');
@@ -58,6 +60,11 @@ export const orderGuard = async (
 
     if (!isValidProduct) {
       throw new Error('BAD_REQUEST');
+    }
+
+    // 充值金额订单
+    if (productId === 4) {
+      product.salePrice = amount;
     }
 
     // 准备订单数据

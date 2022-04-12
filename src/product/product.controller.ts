@@ -20,6 +20,24 @@ export const showLicenseProduct = async (
 };
 
 /**
+ * 充值产品
+ */
+export const showRechargeProduct = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const rechargeProduct = await getProductByType('recharge');
+
+    // 作出响应
+    response.send(rechargeProduct);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * 订阅产品
  */
 export const showSubscriptionProduct = async (

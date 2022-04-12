@@ -12,6 +12,11 @@ const router = express.Router();
 router.get('/products/license', productController.showLicenseProduct);
 
 /**
+ * 充值
+ */
+router.get('/products/recharge', productController.showRechargeProduct);
+
+/**
  * 订阅
  */
 router.get('/products/subscription', productController.showSubscriptionProduct);
