@@ -12,6 +12,7 @@ import {
   getOrders,
   getOrderSubscriptionItem,
   updateOrder,
+  getOrderById,
 } from './order.service';
 
 /**
@@ -99,6 +100,8 @@ export const update = async (
     // 更新订单
     const data = await updateOrder(order.id, dataForUpdate);
 
+    const newOrder = await getOrderById(order.id);
+
     // 创建订单日志
     await createOrderLog({
       userId: user.id,
@@ -110,7 +113,7 @@ export const update = async (
     });
 
     // 做出响应
-    response.send(data);
+    response.send({ data, newOrder });
   } catch (error) {
     next(error);
   }

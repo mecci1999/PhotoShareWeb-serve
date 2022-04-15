@@ -53,4 +53,9 @@ router.get(
   userController.show,
 );
 
+/**
+ * 用户信息列表
+ */
+router.get('/users', userController.index);
+
 export default router;

@@ -101,7 +101,7 @@ export const updateOrderGuard = async (
   // 解构数据
   const {
     params: { orderId },
-    body: { payment },
+    body: { payment, amount },
   } = request;
 
   try {
@@ -114,19 +114,32 @@ export const updateOrderGuard = async (
 
     // 检查订单
     const order = await getOrderById(parseInt(orderId, 10));
-    const isValidOrder =
-      order &&
-      order.status === OrderStatus.pending &&
-      order.payment !== payment;
 
-    if (!isValidOrder) {
-      throw new Error('BAD_REQUEST');
+    if (order.productId === 4) {
+      const isValidOrder =
+        order &&
+        order.status === OrderStatus.pending &&
+        order.totalAmount !== amount;
+
+      if (!isValidOrder) {
+        throw new Error('BAD_REQUEST');
+      }
+    } else {
+      const isValidOrder =
+        order &&
+        order.status === OrderStatus.pending &&
+        order.payment !== payment;
+
+      if (!isValidOrder) {
+        throw new Error('BAD_REQUEST');
+      }
     }
 
     // 准备主体数据
     request.body = {
       dataForUpdate: {
         payment,
+        totalAmount: amount,
       },
       order,
     };

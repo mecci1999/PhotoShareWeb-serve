@@ -48,7 +48,9 @@ export const getUser = (condition: string) => {
         WHERE
           user.id = subscription.userId
           AND subscription.status = 'valid'
-      ) AS subscription
+      ) AS subscription,
+      user.status,
+      user.amount
       ${password ? ',password' : ''}
       FROM
         user
@@ -112,6 +114,59 @@ export const deleteUser = async (userId: number) => {
 
   // 执行查询
   const [data] = await connection.promise().query(statement, userId);
+
+  // 提供数据
+  return data;
+};
+
+/**
+ * 用户列表
+ */
+export const getUserList = async () => {
+  // 准备查询
+  const statement = `
+    SELECT 
+      user.id,
+      user.name,
+      avatar.id as avatar,
+      (
+        SELECT
+          JSON_OBJECT(
+            'type', subscription.type,
+            'status',IF(now() < subscription.expired, 'valid', 'expired')
+          )
+        FROM
+          subscription
+        WHERE
+          user.id = subscription.userId
+          AND subscription.status = 'valid'
+      ) AS subscription,
+      (
+      	SELECT
+      		COUNT(post.id)
+      	FROM
+      		post
+      	WHERE
+      		post.userId = user.id
+      ) as postAmount,
+      (
+      	SELECT
+      		COUNT(comment.id)
+      	FROM
+      		comment
+      	WHERE
+      		comment.userId = user.id
+      ) as commentAmount,
+      user.status
+    FROM
+      user
+    LEFT JOIN avatar
+    	ON user.id = avatar.userId
+    ORDER BY user.id ASC
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement);
 
   // 提供数据
   return data;

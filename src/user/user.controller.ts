@@ -2,21 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
 import * as userService from './user.service';
 
-
 /**
  * 创建用户
  */
 export const store = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   //准备数据
-  const {name, password} = request.body;
-  
+  const { name, password } = request.body;
+
   //创建用户
   try {
-    const data = await userService.createUser({name, password});
+    const data = await userService.createUser({ name, password });
     response.status(201).send(data);
   } catch (error) {
     next(error);
@@ -24,15 +23,15 @@ export const store = async (
 };
 
 /**
-* 用户账户
-*/
+ * 用户账户
+ */
 export const show = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {userId} = request.params;
+  const { userId } = request.params;
 
   //调取用户
   try {
@@ -48,20 +47,39 @@ export const show = async (
 };
 
 /**
-* 更新用户信息
-*/
+ * 更新用户信息
+ */
 export const update = async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // 准备数据
-  const {id} = request.user;
+  const { id } = request.user;
   const userData = _.pick(request.body.update, ['name', 'password']);
-  
+
   // 更新用户
   try {
     const data = await userService.updateUser(parseInt(`${id}`, 10), userData);
+
+    // 做出响应
+    response.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 用户信息列表
+ */
+export const index = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 获取数据
+  try {
+    const data = await userService.getUserList();
 
     // 做出响应
     response.send(data);
