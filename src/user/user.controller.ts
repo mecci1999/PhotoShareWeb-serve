@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
 import * as userService from './user.service';
+import { countUsers } from './user.service';
 
 /**
  * 创建用户
@@ -77,9 +78,18 @@ export const index = async (
   response: Response,
   next: NextFunction,
 ) => {
+  // 准备数据
+  const { pagination } = request;
+
   // 获取数据
   try {
-    const data = await userService.getUserList();
+    const data = await userService.getUserList({ pagination });
+
+    // 统计用户数量
+    const usersCount = await countUsers();
+
+    // 设置响应头部
+    response.header('X-Total-Count', usersCount.count);
 
     // 做出响应
     response.send(data);

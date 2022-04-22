@@ -1,5 +1,6 @@
 import { connection } from '../app/database/mysql';
 import { UserModel } from './user.model';
+import { GetPostsOptionsPagination } from '../post/post.service';
 
 /**
  * 创建用户
@@ -122,13 +123,24 @@ export const deleteUser = async (userId: number) => {
 /**
  * 用户列表
  */
-export const getUserList = async () => {
+export interface GetUsersOptions {
+  pagination?: GetPostsOptionsPagination;
+}
+
+export const getUserList = async (options: GetUsersOptions) => {
+  // 解构数据
+  const {
+    pagination: { limit, offset },
+  } = options;
+
   // 准备查询
   const statement = `
     SELECT 
-      user.id,
-      user.name,
-      avatar.id as avatar,
+      JSON_OBJECT(
+        'id', user.id,
+        'name', user.name,
+        'avatar', avatar.id
+      ) AS user,
       (
         SELECT
           JSON_OBJECT(
@@ -162,12 +174,41 @@ export const getUserList = async () => {
       user
     LEFT JOIN avatar
     	ON user.id = avatar.userId
+    GROUP BY user.id
     ORDER BY user.id ASC
+    LIMIT ?
+    OFFSET ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, [limit, offset]);
+
+  // 提供数据
+  return data;
+};
+
+/**
+ * 统计用户数量
+ */
+export const countUsers = async () => {
+  // 准备查询
+  const statement = `
+    SELECT
+      COUNT(*) AS count
+    FROM
+      (
+        SELECT
+          user.amount
+        FROM
+          user
+        GROUP BY
+          user.id
+      ) AS count
   `;
 
   // 执行查询
   const [data] = await connection.promise().query(statement);
 
   // 提供数据
-  return data;
+  return data[0] as any;
 };

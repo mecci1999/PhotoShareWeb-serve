@@ -74,3 +74,8 @@ export const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
  * 订单
  */
 export const ORDERS_PER_PAGE = parseInt(process.env['ORDERS_PER_PAGE'], 10);
+
+/**
+ * 用户
+ */
+export const USERS_PER_PAGE = parseInt(process.env['USERS_PER_PAGE'], 10);

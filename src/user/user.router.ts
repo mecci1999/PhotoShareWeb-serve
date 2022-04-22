@@ -7,6 +7,8 @@ import {
   hashPassword,
   validateUpdateUserData,
 } from './user.middleware';
+import { paginate } from '../post/post.middleware';
+import { USERS_PER_PAGE } from '../app/app.config';
 
 const router = express.Router();
 
@@ -56,6 +58,6 @@ router.get(
 /**
  * 用户信息列表
  */
-router.get('/users', userController.index);
+router.get('/users', authGuard, paginate(USERS_PER_PAGE), userController.index);
 
 export default router;
