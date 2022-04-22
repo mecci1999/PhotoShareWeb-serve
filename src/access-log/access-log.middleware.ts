@@ -26,6 +26,10 @@ export const accessLog = (options: AccessLogOptions) => (
     payload = _.get(request, payloadParam, null);
   }
 
+  // // 判断当前是不是游客访问
+  // if (request.user.name === 'anonymous') {
+  // }
+
   // 当前用户
   const { id: userId, name: userName } = request.user;
 

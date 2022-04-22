@@ -1,6 +1,6 @@
 export interface AccessLogModel {
   id?: number;
-  userId?: number;
+  userId?: number | null;
   userName?: string;
   action?: string;
   resourceType?: string;

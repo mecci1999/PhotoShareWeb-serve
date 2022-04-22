@@ -113,8 +113,9 @@ export const currentUser = (
   response: Response,
   next: NextFunction,
 ) => {
+  // 游客状态
   let user: TokenPayload = {
-    id: parseInt('', 10),
+    id: undefined,
     name: 'anonymous',
   };
 
