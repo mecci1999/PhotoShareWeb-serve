@@ -1,6 +1,6 @@
 import express from 'express';
 import { accessLog } from '../access-log/access-log.middleware';
-import { authGuard } from '../auth/auth.middleware';
+import { authGuard, validManagerGuard } from '../auth/auth.middleware';
 import * as userController from './user.controller';
 import {
   validataUserData,
@@ -59,5 +59,15 @@ router.get(
  * 用户信息列表
  */
 router.get('/users', authGuard, paginate(USERS_PER_PAGE), userController.index);
+
+/**
+ * 改变用户状态
+ */
+router.patch(
+  '/users/:userId',
+  authGuard,
+  validManagerGuard,
+  userController.updateUserStatus,
+);
 
 export default router;

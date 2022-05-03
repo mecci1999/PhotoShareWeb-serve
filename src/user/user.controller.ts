@@ -97,3 +97,29 @@ export const index = async (
     next(error);
   }
 };
+
+/**
+ * 改变用户当前状态
+ */
+export const updateUserStatus = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const { status } = request.body;
+  const { userId } = request.params;
+
+  // 更新用户状态
+  try {
+    const data = await userService.changeUserStatus(
+      status,
+      parseInt(userId, 10),
+    );
+
+    // 做出响应
+    response.send(data);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -196,14 +196,7 @@ export const countUsers = async () => {
     SELECT
       COUNT(*) AS count
     FROM
-      (
-        SELECT
-          user.amount
-        FROM
-          user
-        GROUP BY
-          user.id
-      ) AS count
+      user
   `;
 
   // 执行查询
@@ -211,4 +204,21 @@ export const countUsers = async () => {
 
   // 提供数据
   return data[0] as any;
+};
+
+/**
+ * 改变用户状态
+ */
+
+export const changeUserStatus = async (status: string, userId: number) => {
+  // 准备查询
+  const statement = `
+    UPDATE user SET status = ? WHERE user.id = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, [status, userId]);
+
+  // 提供数据
+  return data;
 };

@@ -142,3 +142,22 @@ export const currentUser = (
   // 下一步
   next();
 };
+
+/**
+ * 验证管理员身份
+ */
+export const validManagerGuard = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 获取当前用户Id
+  const { id } = request.user;
+
+  if (id && id === 1) {
+    // 下一步
+    next();
+  } else {
+    return next(new Error('FORBIDDEN'));
+  }
+};
