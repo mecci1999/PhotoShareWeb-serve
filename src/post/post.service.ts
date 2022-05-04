@@ -76,6 +76,9 @@ export const getPosts = async (options: GetPostsOptions) => {
     ? `AND audit.status = '${auditStatus}'`
     : '';
 
+  // 用户状态
+  const userStatus = `user.status = 'normal'`;
+
   // 定义用户是否点赞过内容的sql语句
   const sqlUserLikedPost = {
     currentLiked: `
@@ -108,7 +111,9 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.leftJoinTag}
     ${sqlFragment.leftJoinOneAuditLog}
     ${filter?.name == 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter?.sql} AND ${whereStatus} ${whereAuditStatus}
+    WHERE ${
+      filter?.sql
+    } AND ${userStatus}  AND ${whereStatus} ${whereAuditStatus}
     GROUP BY post.id
     ORDER BY ${sort}
     LIMIT ?
