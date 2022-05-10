@@ -1,6 +1,11 @@
 import express from 'express';
 import * as dashBoardController from './dashboard.controller';
-import { accessCountFilter, accessCountsGuard } from './dashboard.middleware';
+import { validManagerGuard } from '../auth/auth.middleware';
+import {
+  accessCountFilter,
+  accessCountsGuard,
+  orderDateFilter,
+} from './dashboard.middleware';
 
 /**
  * 定义路由
@@ -24,6 +29,26 @@ router.get(
   accessCountsGuard,
   accessCountFilter,
   dashBoardController.accessCountShow,
+);
+
+/**
+ * 管理员接口新增动作数据
+ */
+router.get(
+  '/dashboard/admin/access-counts',
+  validManagerGuard,
+  accessCountFilter,
+  dashBoardController.accessCountIndexAdmin,
+);
+
+/**
+ * 管理员获取新增收益和总收益接口
+ */
+router.get(
+  '/dashboard/admin/income',
+  validManagerGuard,
+  orderDateFilter,
+  dashBoardController.getOrderData,
 );
 
 /**
