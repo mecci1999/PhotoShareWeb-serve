@@ -134,3 +134,11 @@ export const accessCountsGuard = async (
   // 下一步
   next();
 };
+
+/**
+ * 改变时间显示问题的中间件
+ */
+export interface changeDateTimeOption {
+  datetimeArray: Array<string>;
+  valueArray: Array<number>;
+}

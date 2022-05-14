@@ -12,9 +12,9 @@ import {
  */
 export interface GetAccessCountsOptions {
   filter: {
-    name: string;
+    name?: string;
     sql?: string;
-    param?: string;
+    param?: string | Array<string | number> | null;
   };
   range?: string;
 }
@@ -64,7 +64,7 @@ export const getAccessCounts = async (options: GetAccessCountsOptions) => {
  * 按动作分时段访问次数
  */
 interface GetAccessCountByAcitonResult {
-  action: string;
+  action?: string;
   datetime: string;
   value: number;
 }
@@ -296,4 +296,113 @@ export const getIncomeByDateTime = async (options: GetAccessCountsOptions) => {
 
   // 提供数据
   return data[0];
+};
+
+/**
+ * 根据不同动作获取不同时间的数据总数
+ */
+export const getSumDataByAction = async (
+  options: GetAccessCountByActionOptions,
+) => {
+  // 解构数据
+  const {
+    action,
+    filter: { sql: whereDateTimeRange, param: dateTimeFormat },
+  } = options;
+
+  // 查询条件
+  const andWhereAction = `AND access_log.action = ?`;
+
+  // SQL 参数
+  const params = [action];
+
+  // 准备查询
+  const statement = `
+    SELECT
+      access_log.action,
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}') AS datetime,
+      MAX(access_log.sumData) AS value
+    FROM
+      access_log
+    WHERE
+      ${whereDateTimeRange} ${andWhereAction}
+    GROUP BY
+      access_log.action,
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}')
+    ORDER BY
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}')
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, params);
+
+  const results = data as Array<GetAccessCountByAcitonResult>;
+
+  // 数据集合
+  const dateset = results.reduce(
+    (accumulator, result) => {
+      const [datetimeArray, valueArray] = accumulator;
+      datetimeArray.push(result.datetime);
+      valueArray.push(result.value);
+      return accumulator;
+    },
+    [[], []],
+  );
+
+  //动作标题
+  const title = allowedAccessCounts.find(
+    accessCount => accessCount.action === action,
+  ).title;
+
+  // 提供数据
+  return { title, action, dateset } as AccessCount;
+};
+
+/**
+ * 获取不同时段的新增收益数据
+ */
+export const getAddIncomeByDatetime = async (
+  options: GetAccessCountsOptions,
+) => {
+  // 解构数据
+  const {
+    filter: { sql: whereDateTimeRange, param: dateTimeFormat },
+  } = options;
+
+  // 准备查询
+  const statement = `
+    SELECT
+      DATE_FORMAT(\`order\`.updated, '${dateTimeFormat}') AS datetime,
+      SUM(order.totalAmount) AS value
+    FROM
+      \`order\`
+    WHERE
+      ${whereDateTimeRange} AND \`order\`.status = 'completed'
+    GROUP BY
+      DATE_FORMAT(\`order\`.updated, '${dateTimeFormat}')
+    ORDER BY
+      DATE_FORMAT(\`order\`.updated, '${dateTimeFormat}')
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement);
+
+  const results = data as Array<GetAccessCountByAcitonResult>;
+
+  // 数据集合
+  const dateset = results.reduce(
+    (accumulator, result) => {
+      const [datetimeArray, valueArray] = accumulator;
+      datetimeArray.push(result.datetime);
+      valueArray.push(result.value);
+      return accumulator;
+    },
+    [[], []],
+  );
+
+  const title = '新增收益';
+  const action = 'addIncome';
+
+  // 提供数据
+  return { title, action, dateset } as AccessCount;
 };

@@ -42,6 +42,26 @@ router.get(
 );
 
 /**
+ * 管理员获取不同时间段的数据接口
+ */
+router.get(
+  '/dashboard/admin/access-counts/:action',
+  validManagerGuard,
+  accessCountFilter,
+  dashBoardController.accessCountShow,
+);
+
+/**
+ * 管理员获取不同时间段的数据接口
+ */
+router.get(
+  '/dashboard/admin/access-counts/sum/:action',
+  validManagerGuard,
+  accessCountFilter,
+  dashBoardController.getSumDataByDatetime,
+);
+
+/**
  * 管理员获取新增收益和总收益接口
  */
 router.get(
@@ -49,6 +69,16 @@ router.get(
   validManagerGuard,
   orderDateFilter,
   dashBoardController.getOrderData,
+);
+
+/**
+ * 管理员获取不同时间段的新增收益和总收益接口
+ */
+router.get(
+  '/dashboard/admin/income/access-counts',
+  validManagerGuard,
+  orderDateFilter,
+  dashBoardController.AddIncomeAccessCount,
 );
 
 /**

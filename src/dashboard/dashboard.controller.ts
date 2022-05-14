@@ -4,8 +4,10 @@ import {
   getAccessCounts,
   GetAccessCountsOptions,
   getActionTypeSum,
-  getAdminContentCardAction,
   getIncomeByDateTime,
+  getAdminContentCardAction,
+  getSumDataByAction,
+  getAddIncomeByDatetime,
 } from './dashboard.service';
 
 /**
@@ -151,13 +153,13 @@ export const getOrderData = async (
     const data = await getIncomeByDateTime({
       filter,
     } as GetAccessCountsOptions);
-    console.log(data);
 
     if (data && data.value === null) {
       data.value = 0;
     }
 
     const result = {
+      action: 'addIncome',
       title: '新增收益',
       ...data,
       icon: 'add_shopping_cart',
@@ -165,6 +167,49 @@ export const getOrderData = async (
 
     // 做出响应
     response.send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 获取不同时间段的数据总数
+ */
+export const getSumDataByDatetime = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const {
+    params: { action },
+    filter,
+  } = request;
+
+  try {
+    const sumData = await getSumDataByAction({ action, filter });
+
+    response.send(sumData);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 获取不同时间段的订单收益
+ */
+export const AddIncomeAccessCount = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const { filter } = request;
+
+  try {
+    const data = await getAddIncomeByDatetime({ filter });
+
+    response.send(data);
   } catch (error) {
     next(error);
   }

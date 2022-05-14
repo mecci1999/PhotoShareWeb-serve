@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
-import { createAccessLog } from './access-log.service';
+import { createAccessLog, getSumData } from './access-log.service';
 
 /**
  * 访问日志
@@ -12,7 +12,11 @@ interface AccessLogOptions {
   payloadParam?: string;
 }
 
-export const accessLog = (options: AccessLogOptions) => (
+interface SumDataOptions {
+  value: number;
+}
+
+export const accessLog = (options: AccessLogOptions) => async (
   request: Request,
   response: Response,
   next: NextFunction,
@@ -56,6 +60,8 @@ export const accessLog = (options: AccessLogOptions) => (
     route: { path },
   } = request;
 
+  const data = (await getSumData(action)) as SumDataOptions;
+
   // 日志数据
   const accessLog = {
     userId,
@@ -74,6 +80,7 @@ export const accessLog = (options: AccessLogOptions) => (
     query: Object.keys(query).length ? JSON.stringify(query) : null,
     params: Object.keys(params).length ? JSON.stringify(params) : null,
     path,
+    sumData: data.value,
   };
 
   // 创建日志

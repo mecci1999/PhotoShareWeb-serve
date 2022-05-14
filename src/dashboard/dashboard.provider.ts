@@ -113,7 +113,7 @@ export const allowedActionAdminUser: Array<AccessCountListItem> = [
   },
   {
     action: 'getPostById',
-    title: '内容访问量',
+    title: '素材访问量',
     icon: 'local_library',
     sumCount: 0,
   },

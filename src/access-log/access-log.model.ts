@@ -15,5 +15,6 @@ export interface AccessLogModel {
   method?: string;
   query?: Object | null;
   params?: Object | null;
+  sumData?: number | null;
   created?: number;
 }
