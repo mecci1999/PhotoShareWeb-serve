@@ -18,6 +18,7 @@ router.post(
     action: 'createComment',
     resourceType: 'comment',
     payloadParam: 'body.content',
+    resourceParamName: 'body.postId',
   }),
   commentController.store,
 );

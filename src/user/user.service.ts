@@ -42,7 +42,8 @@ export const getUser = (condition: string) => {
         SELECT
           JSON_OBJECT(
             'type', subscription.type,
-            'status',IF(now() < subscription.expired, 'valid', 'expired')
+            'status',IF(now() < subscription.expired, 'valid', 'expired'),
+            'expiredtime', IF(now() < subscription.expired, subscription.expired, '已过期')
           )
         FROM
           subscription
@@ -51,7 +52,40 @@ export const getUser = (condition: string) => {
           AND subscription.status = 'valid'
       ) AS subscription,
       user.status,
-      user.amount
+      user.amount,
+      (
+      	SELECT
+      		COUNT(post.id)
+      	FROM
+      		post
+      	WHERE
+      		post.userId = user.id
+      ) AS postAmount,
+      (
+      	SELECT
+      		COUNT(comment.id)
+      	FROM
+      		comment
+      	WHERE
+      		comment.userId = user.id
+      ) AS commentAmount,
+      (
+      	SELECT
+      		COUNT(user_like_post.postId)
+      	FROM
+      		user_like_post
+      	WHERE
+      		user_like_post.userId = user.id
+      ) AS likeAmount,
+      (
+        SELECT
+          COUNT(download.id)
+        FROM
+          download
+        WHERE
+          download.userId = user.id
+      ) AS downloadAmount,
+      DATE_FORMAT(user.created, '%Y%m%d%H') AS registrytime
       ${password ? ',password' : ''}
       FROM
         user

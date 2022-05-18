@@ -1,17 +1,36 @@
 import { Request, Response, NextFunction } from 'express';
 import {
+  allowedActionUserOther,
+  allowedActionUserPost,
+} from './dashboard.provider';
+import {
   getAccessCountByAction,
-  getAccessCounts,
+  getPostAccessCounts,
   GetAccessCountsOptions,
   getActionTypeSum,
   getIncomeByDateTime,
   getAdminContentCardAction,
   getSumDataByAction,
   getAddIncomeByDatetime,
+  getCommentAccessCounts,
+  getLikeAccessCounts,
+  getSumPostAccessCounts,
+  getSumCommentAccessCounts,
+  getSumLikeAccessCounts,
+  addIncomeUser,
+  addIncomeUserSum,
+  createDownloadUser,
+  createDownloadUserSum,
+  createPostUser,
+  createPostUserSum,
+  getAccessCountsByDateTime,
+  getCreatePostByDateTime,
+  getPostDownloadByDateTime,
+  getAddIncomeByDateTime,
 } from './dashboard.service';
 
 /**
- * 访问次数列表
+ * 用户作品访问次数列表
  */
 export const accessCountIndex = async (
   request: Request,
@@ -19,15 +38,135 @@ export const accessCountIndex = async (
   next: NextFunction,
 ) => {
   // 准备数据
-  const { filter } = request;
+  const {
+    filter,
+    query: { range },
+    user: { id: userId },
+  } = request;
 
   try {
-    const accessCounts = await getAccessCounts({
+    let item;
+    switch (range) {
+      case 'post':
+        item = allowedActionUserPost;
+        break;
+      case 'other':
+        item = allowedActionUserOther;
+        break;
+    }
+
+    // 得到用户作品访问次数
+    const post = await getPostAccessCounts({
       filter,
+      userId,
     } as GetAccessCountsOptions);
 
+    const postSum = await getSumPostAccessCounts({
+      userId,
+    } as GetAccessCountsOptions);
+
+    // 得到用户作品评论数量
+    const comment = await getCommentAccessCounts({
+      filter,
+      userId,
+    } as GetAccessCountsOptions);
+
+    const commentSum = await getSumCommentAccessCounts({
+      userId,
+    } as GetAccessCountsOptions);
+
+    // 得到用户作品评论数量
+    const like = await getLikeAccessCounts({
+      filter,
+      userId,
+    } as GetAccessCountsOptions);
+
+    const likeSum = await getSumLikeAccessCounts({
+      userId,
+    } as GetAccessCountsOptions);
+
+    // 得到用户作品评论数量
+    const income = await addIncomeUser({
+      filter,
+      userId,
+    } as GetAccessCountsOptions);
+
+    const incomeSum = await addIncomeUserSum({
+      userId,
+    } as GetAccessCountsOptions);
+
+    // 得到用户作品评论数量
+    const download = await createDownloadUser({
+      filter,
+      userId,
+    } as GetAccessCountsOptions);
+
+    const downloadSum = await createDownloadUserSum({
+      userId,
+    } as GetAccessCountsOptions);
+
+    // 得到用户作品评论数量
+    const createPost = await createPostUser({
+      filter,
+      userId,
+    } as GetAccessCountsOptions);
+
+    const createPostSum = await createPostUserSum({
+      userId,
+    } as GetAccessCountsOptions);
+
+    item.map(accessCount => {
+      if (accessCount.action === 'getPostById') {
+        let result = post.find(item => item.action === accessCount.action);
+        let sum = postSum.find(item => item.action === accessCount.action);
+        accessCount.value = result && result.value ? result.value : 0;
+        accessCount.sumCount = sum && sum.sumCount ? sum.sumCount : 0;
+      }
+
+      if (accessCount.action === 'createComment') {
+        let result = comment.find(item => item.action === accessCount.action);
+        let sum = commentSum.find(item => item.action === accessCount.action);
+        accessCount.value = result && result.value ? result.value : 0;
+        accessCount.sumCount = sum && sum.sumCount ? sum.sumCount : 0;
+      }
+
+      if (accessCount.action === 'createUserLikePost') {
+        let result = like.find(item => item.action === accessCount.action);
+        let sum = likeSum.find(item => item.action === accessCount.action);
+        accessCount.value = result && result.value ? result.value : 0;
+        accessCount.sumCount = sum && sum.sumCount ? sum.sumCount : 0;
+      }
+
+      if (accessCount.action === 'addIncome') {
+        let result = income.find(item => item.action === accessCount.action);
+        let sum = incomeSum.find(item => item.action === accessCount.action);
+        accessCount.value = result && result.value ? result.value : 0;
+        accessCount.sumCount = sum && sum.sumCount ? sum.sumCount : 0;
+      }
+
+      if (accessCount.action === 'createDownload') {
+        let result = download.find(item => item.action === accessCount.action);
+        let sum = downloadSum.find(item => item.action === accessCount.action);
+        accessCount.value = result && result.value ? result.value : 0;
+        accessCount.sumCount = sum && sum.sumCount ? sum.sumCount : 0;
+      }
+
+      if (accessCount.action === 'createPost') {
+        let result = createPost.find(
+          item => item.action === accessCount.action,
+        );
+        let sum = createPostSum.find(
+          item => item.action === accessCount.action,
+        );
+        accessCount.value = result && result.value ? result.value : 0;
+        accessCount.sumCount = sum && sum.sumCount ? sum.sumCount : 0;
+      }
+
+      return accessCount;
+    });
+
     // 做出响应
-    response.send(accessCounts);
+    response.send(item);
   } catch (error) {
     next(error);
   }
@@ -53,6 +192,79 @@ export const accessCountShow = async (
 
     // 做出响应
     response.send(accessCount);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 用户按动作分时段访问次数
+ */
+export const accessCountShowUser = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  // 准备数据
+  const {
+    params: { action },
+    filter,
+    user: { id: userId },
+  } = request;
+
+  // 调用服务方法
+  try {
+    // 作品相关动作
+    if (
+      action === 'getPostById' ||
+      action === 'createComment' ||
+      action === 'createUserLikePost'
+    ) {
+      const accessCount = await getAccessCountsByDateTime({
+        action,
+        filter,
+        userId,
+      });
+
+      // 做出响应
+      response.send(accessCount);
+    }
+
+    // 新增收益
+    if (action === 'addIncome') {
+      const accessCount = await getAddIncomeByDateTime({
+        action,
+        filter,
+        userId,
+      });
+
+      // 做出响应
+      response.send(accessCount);
+    }
+
+    // 作品下载
+    if (action === 'createDownload') {
+      const accessCount = await getPostDownloadByDateTime({
+        action,
+        filter,
+        userId,
+      });
+
+      // 做出响应
+      response.send(accessCount);
+    }
+
+    // 发布作品
+    if (action === 'createPost') {
+      const accessCount = await getCreatePostByDateTime({
+        action,
+        filter,
+        userId,
+      });
+
+      // 做出响应
+      response.send(accessCount);
+    }
   } catch (error) {
     next(error);
   }

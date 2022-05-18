@@ -38,9 +38,14 @@ export const accessLog = (options: AccessLogOptions) => async (
   const { id: userId, name: userName } = request.user;
 
   // 资源 ID
-  const resourceId = resourceParamName
-    ? parseInt(request.params[resourceParamName], 10)
-    : null;
+  let resourceId;
+  if (resourceType === 'comment') {
+    resourceId = _.get(request, resourceParamName, null);
+  } else {
+    resourceId = resourceParamName
+      ? parseInt(request.params[resourceParamName], 10)
+      : null;
+  }
 
   // 头部数据
   const {

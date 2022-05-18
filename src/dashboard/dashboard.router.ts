@@ -1,11 +1,7 @@
 import express from 'express';
 import * as dashBoardController from './dashboard.controller';
-import { validManagerGuard } from '../auth/auth.middleware';
-import {
-  accessCountFilter,
-  accessCountsGuard,
-  orderDateFilter,
-} from './dashboard.middleware';
+import { authGuard, validManagerGuard } from '../auth/auth.middleware';
+import { accessCountFilter, orderDateFilter } from './dashboard.middleware';
 
 /**
  * 定义路由
@@ -16,7 +12,8 @@ const router = express.Router();
  * 访问次数列表
  */
 router.get(
-  '/dashboard/access-counts',
+  '/dashboard/user/access-counts',
+  authGuard,
   accessCountFilter,
   dashBoardController.accessCountIndex,
 );
@@ -25,10 +22,10 @@ router.get(
  * 按动作分时段的访问次数
  */
 router.get(
-  '/dashboard/access-counts/:action',
-  accessCountsGuard,
+  '/dashboard/user/access-counts/:action',
+  authGuard,
   accessCountFilter,
-  dashBoardController.accessCountShow,
+  dashBoardController.accessCountShowUser,
 );
 
 /**
@@ -52,7 +49,7 @@ router.get(
 );
 
 /**
- * 管理员获取不同时间段的数据接口
+ * 管理员获取不同时间段的总数据接口
  */
 router.get(
   '/dashboard/admin/access-counts/sum/:action',

@@ -52,7 +52,7 @@ export const allowedAccessCounts: Array<AccessCountListItem> = [
     title: '搜索镜头',
   },
   {
-    action: 'newIncome',
+    action: 'addIncome',
     title: '新增收益',
   },
   {
@@ -145,6 +145,54 @@ export const allowedActionAdminPost: Array<AccessCountListItem> = [
     action: 'createUserLikePost',
     title: '新增点赞',
     icon: 'favorite',
+    sumCount: 0,
+  },
+];
+
+/**
+ * 用户获取后台作品相关动作数据
+ */
+export const allowedActionUserPost: Array<AccessCountListItem> = [
+  {
+    action: 'getPostById',
+    title: '作品访问量',
+    icon: 'local_library',
+    sumCount: 0,
+  },
+  {
+    action: 'createComment',
+    title: '作品评论量',
+    icon: 'comment',
+    sumCount: 0,
+  },
+  {
+    action: 'createUserLikePost',
+    title: '作品点赞量',
+    icon: 'favorite',
+    sumCount: 0,
+  },
+];
+
+/**
+ * 用户获取后台作品相关动作数据
+ */
+export const allowedActionUserOther: Array<AccessCountListItem> = [
+  {
+    action: 'addIncome',
+    title: '收益情况',
+    icon: 'add_shopping_cart',
+    sumCount: 0,
+  },
+  {
+    action: 'createDownload',
+    title: '作品下载量',
+    icon: 'cloud_queue',
+    sumCount: 0,
+  },
+  {
+    action: 'createPost',
+    title: '发布作品量',
+    icon: 'photo_camera',
     sumCount: 0,
   },
 ];
