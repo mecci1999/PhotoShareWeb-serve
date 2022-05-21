@@ -1,6 +1,7 @@
 export enum PaymentName {
   wxpay = 'wxpay',
   alipay = 'alipay',
+  amount = 'amount',
 }
 
 export enum PaymentStatus {

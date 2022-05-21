@@ -107,3 +107,52 @@ export const paymentRecived = async (orderId: number, paymentResult: any) => {
     await postProcessSubscription({ order, product, socketId });
   }
 };
+
+/**
+ * 扣除账户余额
+ */
+export const updateAccountAmount = async (userId: number, amount: number) => {
+  // 准备查询
+  const statement = `
+    UPDATE
+      user
+    SET
+      amount = ?
+    WHERE id = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, [amount, userId]);
+
+  // 提供数据
+  return data;
+};
+
+/**
+ * 根据订单Id，获取作品作者账号信息
+ */
+export interface AuthorInfoOption {
+  id?: number;
+  amount?: string;
+}
+
+export const getUserInfoByOrderId = async (orderId: number) => {
+  // 准备查询
+  const statement = `
+    SELECT
+      user.id,
+      user.amount
+    FROM
+      user
+    LEFT JOIN post ON post.userId = user.id
+    LEFT JOIN license ON license.resourceId = post.id
+    LEFT JOIN \`order\` ON \`order\`.id = license.orderId
+    WHERE order.id = ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, orderId);
+
+  // 提供数据
+  return data[0] as AuthorInfoOption;
+};
